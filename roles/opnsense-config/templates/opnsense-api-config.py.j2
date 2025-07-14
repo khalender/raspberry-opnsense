@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+"""
+OPNsense API Configuration Script
+Configures OPNsense via REST API after initial setup
+"""
+
+import requests
+import json
+import time
+import urllib3
+from base64 import b64encode
+
+# Disable SSL warnings for self-signed certificates
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+class OPNsenseAPI:
+    def __init__(self, host, username, password):
+        self.host = host
+        self.username = username
+        self.password = password
+        self.base_url = f"https://{host}/api"
+        self.session = requests.Session()
+        self.session.verify = False
+
+        # Set up basic auth
+        credentials = f"{username}:{password}"
+        encoded_credentials = b64encode(credentials.encode()).decode()
+        self.session.headers.update({
+            'Authorization': f'Basic {encoded_credentials}',
+            'Content-Type': 'application/json'
+        })
+
+    def test_connection(self):
+        """Test if we can connect to OPNsense API"""
+        try:
+            response = self.session.get(f"{self.base_url}/core/system/status")
+            return response.status_code == 200
+        except Exception as e:
+            print(f"Connection test failed: {e}")
+            return False
+
+    def configure_interfaces(self):
+        """Configure network interfaces"""
+        # WAN interface configuration
+        wan_config = {
+            "interface": {
+                "enabled": "1",
+                "type": "dhcp",
+                "descr": "WAN"
+            }
+        }
+
+        # LAN interface configuration
+        lan_config = {
+            "interface": {
+                "enabled": "1",
+                "type": "staticv4",
+                "ipaddr": "{{ opnsense_lan_ip }}",
+                "subnet": "24",
+                "descr": "LAN"
+            }
+        }
+
+        try:
+            # Configure WAN
+            response = self.session.post(
+                f"{self.base_url}/interfaces/wan_dhcp/set",
+                json=wan_config
+            )
+            print(f"WAN configuration: {response.status_code}")
+
+            # Configure LAN
+            response = self.session.post(
+                f"{self.base_url}/interfaces/lan_staticv4/set",
+                json=lan_config
+            )
+            print(f"LAN configuration: {response.status_code}")
+
+        except Exception as e:
+            print(f"Interface configuration failed: {e}")
+
+    def configure_dhcp(self):
+        """Configure DHCP server"""
+        dhcp_config = {
+            "dhcp": {
+                "lan": {
+                    "enabled": "1",
+                    "range_from": "10.0.0.100",
+                    "range_to": "10.0.0.200",
+                    "domain": "local",
+                    "dnsserver": "{{ opnsense_lan_ip }}"
+                }
+            }
+        }
+
+        try:
+            response = self.session.post(
+                f"{self.base_url}/dhcpv4/settings/set",
+                json=dhcp_config
+            )
+            print(f"DHCP configuration: {response.status_code}")
+        except Exception as e:
+            print(f"DHCP configuration failed: {e}")
+
+    def configure_firewall_rules(self):
+        """Configure basic firewall rules"""
+        # Allow LAN to any
+        lan_rule = {
+            "rule": {
+                "enabled": "1",
+                "sequence": "1",
+                "action": "pass",
+                "interface": "lan",
+                "direction": "in",
+                "ipprotocol": "inet",
+                "protocol": "any",
+                "source_net": "lan",
+                "destination_net": "any",
+                "descr": "LAN to any"
+            }
+        }
+
+        try:
+            response = self.session.post(
+                f"{self.base_url}/firewall/filter/addRule",
+                json=lan_rule
+            )
+            print(f"Firewall rule added: {response.status_code}")
+
+            # Apply firewall changes
+            response = self.session.post(f"{self.base_url}/firewall/filter/apply")
+            print(f"Firewall rules applied: {response.status_code}")
+
+        except Exception as e:
+            print(f"Firewall configuration failed: {e}")
+
+    def configure_content_filter(self):
+        """Configure content filtering"""
+        if not {{ content_filter_enabled | lower }}:
+            return
+
+        # Enable web proxy for content filtering
+        proxy_config = {
+            "proxy": {
+                "general": {
+                    "enabled": "1",
+                    "port": "3128",
+                    "transparentMode": "1"
+                }
+            }
+        }
+
+        try:
+            response = self.session.post(
+                f"{self.base_url}/proxy/settings/set",
+                json=proxy_config
+            )
+            print(f"Content filter configuration: {response.status_code}")
+        except Exception as e:
+            print(f"Content filter configuration failed: {e}")
+
+def main():
+    print("Starting OPNsense API configuration...")
+
+    # Initialize API client
+    api = OPNsenseAPI("{{ opnsense_lan_ip }}", "root", "opnsense")
+
+    # Wait for OPNsense to be ready
+    print("Waiting for OPNsense to be ready...")
+    max_retries = 30
+    for i in range(max_retries):
+        if api.test_connection():
+            print("OPNsense is ready!")
+            break
+        print(f"Attempt {i+1}/{max_retries} - waiting...")
+        time.sleep(10)
+    else:
+        print("Failed to connect to OPNsense API")
+        return
+
+    # Configure OPNsense
+    print("Configuring interfaces...")
+    api.configure_interfaces()
+
+    print("Configuring DHCP...")
+    api.configure_dhcp()
+
+    print("Configuring firewall rules...")
+    api.configure_firewall_rules()
+
+    print("Configuring content filter...")
+    api.configure_content_filter()
+
+    print("OPNsense configuration completed!")
+    print(f"Web interface: https://{{ opnsense_lan_ip }}")
+    print("Username: root")
+    print("Password: opnsense")
+
+if __name__ == "__main__":
+    main()

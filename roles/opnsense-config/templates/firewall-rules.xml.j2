@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<rules>
+  <!-- LAN to WAN - Allow all outbound traffic -->
+  <rule>
+    <type>pass</type>
+    <ipprotocol>inet</ipprotocol>
+    <descr>LAN to any</descr>
+    <interface>lan</interface>
+    <source>
+      <network>lan</network>
+    </source>
+    <destination>
+      <any>1</any>
+    </destination>
+  </rule>
+
+  <!-- Allow LAN to access OPNsense web interface -->
+  <rule>
+    <type>pass</type>
+    <ipprotocol>inet</ipprotocol>
+    <descr>Allow access to web interface</descr>
+    <interface>lan</interface>
+    <protocol>tcp</protocol>
+    <source>
+      <network>lan</network>
+    </source>
+    <destination>
+      <network>lanip</network>
+    </destination>
+    <destination_port>443</destination_port>
+  </rule>
+
+  <!-- Allow DNS queries -->
+  <rule>
+    <type>pass</type>
+    <ipprotocol>inet</ipprotocol>
+    <descr>Allow DNS</descr>
+    <interface>lan</interface>
+    <protocol>udp</protocol>
+    <source>
+      <network>lan</network>
+    </source>
+    <destination>
+      <network>lanip</network>
+    </destination>
+    <destination_port>53</destination_port>
+  </rule>
+
+  <!-- Allow DHCP -->
+  <rule>
+    <type>pass</type>
+    <ipprotocol>inet</ipprotocol>
+    <descr>Allow DHCP</descr>
+    <interface>lan</interface>
+    <protocol>udp</protocol>
+    <source>
+      <network>lan</network>
+    </source>
+    <destination>
+      <network>lanip</network>
+    </destination>
+    <destination_port>67</destination_port>
+  </rule>
+
+  <!-- Block access to private networks from WAN -->
+  <rule>
+    <type>block</type>
+    <ipprotocol>inet</ipprotocol>
+    <descr>Block private networks</descr>
+    <interface>wan</interface>
+    <source>
+      <any>1</any>
+    </source>
+    <destination>
+      <network>10.0.0.0/8</network>
+    </destination>
+  </rule>
+
+  <!-- Block bogon networks -->
+  <rule>
+    <type>block</type>
+    <ipprotocol>inet</ipprotocol>
+    <descr>Block bogon networks</descr>
+    <interface>wan</interface>
+    <source>
+      <network>bogonsv4</network>
+    </source>
+    <destination>
+      <any>1</any>
+    </destination>
+  </rule>
+
+  <!-- Content filtering rules -->
+  {% if content_filter_enabled %}
+  <rule>
+    <type>block</type>
+    <ipprotocol>inet</ipprotocol>
+    <descr>Block adult content</descr>
+    <interface>lan</interface>
+    <protocol>tcp</protocol>
+    <source>
+      <network>lan</network>
+    </source>
+    <destination>
+      <any>1</any>
+    </destination>
+    <destination_port>80,443</destination_port>
+    <category>adult</category>
+  </rule>
+  {% endif %}
+</rules>

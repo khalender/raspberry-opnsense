@@ -1,0 +1,39 @@
+network:
+  version: 2
+  renderer: networkd
+
+  ethernets:
+    # WAN Interface (Realtek 8156)
+    {{ wan_interface }}:
+      dhcp4: true
+      dhcp4-overrides:
+        use-routes: true
+        use-dns: false
+      nameservers:
+        addresses: [8.8.8.8, 1.1.1.1]
+      optional: true
+
+    # LAN Interface (TP-Link UE300)
+    {{ lan_interface }}:
+      dhcp4: false
+      optional: true
+
+    # Built-in Ethernet (disabled for router use)
+    eth0:
+      dhcp4: false
+      optional: true
+
+  bridges:
+    # Bridge for LAN side
+    {{ bridge_interface }}:
+      interfaces: [{{ lan_interface }}]
+      addresses:
+        - {{ opnsense_lan_ip }}/24
+      nameservers:
+        addresses: [{{ opnsense_lan_ip }}, 8.8.8.8]
+      parameters:
+        stp: false
+        forward-delay: 0
+        hello-time: 2
+        max-age: 12
+      optional: true

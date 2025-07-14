@@ -1,0 +1,49 @@
+---
+- name: Setup Raspberry Pi Router with OPNsense and Docker
+  hosts: raspberry-pi
+  become: yes
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Update system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - qemu-kvm
+          - libvirt-daemon-system
+          - libvirt-clients
+          - bridge-utils
+          - virt-manager
+          - cpu-checker
+          - libguestfs-tools
+          - virtinst
+          - python3-libvirt
+          - python3-lxml
+          - iptables-persistent
+          - netfilter-persistent
+        state: present
+
+  roles:
+    - host-preparation
+    - kvm-setup
+    - opnsense-config
+    - docker-setup
+
+  post_tasks:
+    - name: Enable and start libvirtd
+      systemd:
+        name: libvirtd
+        enabled: yes
+        state: started
+
+    - name: Add pi user to kvm and libvirt groups
+      user:
+        name: pi
+        groups: "{{ kvm_group }},{{ libvirt_group }}"
+        append: yes

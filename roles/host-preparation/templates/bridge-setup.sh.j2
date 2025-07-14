@@ -1,0 +1,73 @@
+#!/bin/bash
+# Bridge setup script for Raspberry Pi Router
+
+set -e
+
+WAN_INTERFACE="{{ wan_interface }}"
+LAN_INTERFACE="{{ lan_interface }}"
+BRIDGE_INTERFACE="{{ bridge_interface }}"
+BRIDGE_IP="{{ opnsense_lan_ip }}/24"
+
+echo "Setting up network bridge for router..."
+
+# Check if interfaces exist
+if ! ip link show "$WAN_INTERFACE" >/dev/null 2>&1; then
+    echo "ERROR: WAN interface $WAN_INTERFACE not found!"
+    echo "Available interfaces:"
+    ip link show | grep -E "^[0-9]+:" | cut -d: -f2 | tr -d ' '
+    exit 1
+fi
+
+if ! ip link show "$LAN_INTERFACE" >/dev/null 2>&1; then
+    echo "ERROR: LAN interface $LAN_INTERFACE not found!"
+    echo "Available interfaces:"
+    ip link show | grep -E "^[0-9]+:" | cut -d: -f2 | tr -d ' '
+    exit 1
+fi
+
+# Bring down interfaces first
+echo "Configuring interfaces..."
+ip link set "$LAN_INTERFACE" down 2>/dev/null || true
+
+# Remove any existing IP addresses from LAN interface
+ip addr flush dev "$LAN_INTERFACE" 2>/dev/null || true
+
+# Create bridge if it doesn't exist
+if ! ip link show "$BRIDGE_INTERFACE" >/dev/null 2>&1; then
+    echo "Creating bridge $BRIDGE_INTERFACE..."
+    ip link add name "$BRIDGE_INTERFACE" type bridge
+fi
+
+# Configure bridge parameters
+echo "Configuring bridge parameters..."
+echo 0 > /sys/class/net/"$BRIDGE_INTERFACE"/bridge/stp_state 2>/dev/null || true
+
+# Add LAN interface to bridge if not already added
+if ! bridge link show | grep -q "$LAN_INTERFACE"; then
+    echo "Adding $LAN_INTERFACE to bridge..."
+    ip link set "$LAN_INTERFACE" master "$BRIDGE_INTERFACE"
+fi
+
+# Bring up interfaces
+echo "Bringing up interfaces..."
+ip link set "$LAN_INTERFACE" up
+ip link set "$BRIDGE_INTERFACE" up
+
+# Configure bridge IP (remove existing first)
+ip addr flush dev "$BRIDGE_INTERFACE" 2>/dev/null || true
+ip addr add "$BRIDGE_IP" dev "$BRIDGE_INTERFACE" 2>/dev/null || true
+
+# Ensure WAN interface is up and configured
+ip link set "$WAN_INTERFACE" up
+
+echo "Bridge configuration completed successfully!"
+echo "Bridge: $BRIDGE_INTERFACE ($BRIDGE_IP)"
+echo "LAN: $LAN_INTERFACE (bridged)"
+echo "WAN: $WAN_INTERFACE (DHCP)"
+
+# Display current configuration
+echo ""
+echo "Current network configuration:"
+ip addr show "$BRIDGE_INTERFACE" | head -3
+ip addr show "$WAN_INTERFACE" | head -3
+bridge link show 2>/dev/null || echo "Bridge links: none"

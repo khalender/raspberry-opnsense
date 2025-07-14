@@ -1,0 +1,124 @@
+---
+- name: Check if running on Raspberry Pi
+  fail:
+    msg: "This playbook is designed for Raspberry Pi systems"
+  when: ansible_architecture != "aarch64" and "raspberry" not in ansible_product_name | lower
+  ignore_errors: true
+
+- name: Display system information
+  debug:
+    msg: |
+      System: {{ ansible_system }}
+      Architecture: {{ ansible_architecture }}
+      Distribution: {{ ansible_distribution }} {{ ansible_distribution_version }}
+      Kernel: {{ ansible_kernel }}
+      Memory: {{ ansible_memtotal_mb }}MB
+
+- name: Check available network interfaces
+  shell: "ip link show | grep -E '^[0-9]+:' | cut -d: -f2 | tr -d ' '"
+  register: available_interfaces
+  changed_when: false
+
+- name: Display available interfaces
+  debug:
+    msg: "Available network interfaces: {{ available_interfaces.stdout_lines }}"
+
+- name: Create netplan directory
+  file:
+    path: /etc/netplan
+    state: directory
+    mode: "0755"
+
+- name: Remove default netplan configuration
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "/etc/netplan/*.yaml"
+    - "/etc/netplan/*.yml"
+  ignore_errors: yes
+
+- name: Configure network interfaces
+  template:
+    src: netplan-config.yaml.j2
+    dest: /etc/netplan/01-router-config.yaml
+    backup: yes
+    mode: "0644"
+  notify: apply netplan
+
+- name: Enable IP forwarding
+  copy:
+    src: sysctl-router.conf
+    dest: /etc/sysctl.d/99-router.conf
+    mode: "0644"
+  notify: reload sysctl
+
+- name: Create bridge setup script
+  template:
+    src: bridge-setup.sh.j2
+    dest: /usr/local/bin/bridge-setup.sh
+    mode: "0755"
+
+- name: Install bridge utilities
+  apt:
+    name:
+      - bridge-utils
+      - net-tools
+      - iproute2
+    state: present
+
+- name: Check if interfaces exist
+  shell: ip link show {{ item }}
+  register: interface_check
+  failed_when: false
+  changed_when: false
+  loop:
+    - "{{ wan_interface }}"
+    - "{{ lan_interface }}"
+
+- name: Display interface status
+  debug:
+    msg: |
+      Interface {{ item.item }} status:
+      {% if item.rc == 0 %}
+      EXISTS - {{ item.stdout_lines[0] }}
+      {% else %}
+      NOT FOUND - Please check interface name
+      {% endif %}
+  loop: "{{ interface_check.results }}"
+
+- name: Setup network bridges (only if interfaces exist)
+  command: /usr/local/bin/bridge-setup.sh
+  when: interface_check.results | selectattr('rc', 'equalto', 0) | list | length == 2
+  changed_when: false
+
+- name: Configure iptables for routing
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: "{{ wan_interface }}"
+    jump: MASQUERADE
+    comment: "NAT for router functionality"
+  notify: save iptables
+  when: interface_check.results[0].rc == 0
+
+- name: Allow forwarding between interfaces
+  iptables:
+    chain: FORWARD
+    in_interface: "{{ lan_interface }}"
+    out_interface: "{{ wan_interface }}"
+    jump: ACCEPT
+    comment: "Allow LAN to WAN forwarding"
+  notify: save iptables
+  when: interface_check.results | selectattr('rc', 'equalto', 0) | list | length == 2
+
+- name: Allow established connections back
+  iptables:
+    chain: FORWARD
+    in_interface: "{{ wan_interface }}"
+    out_interface: "{{ lan_interface }}"
+    ctstate: ESTABLISHED,RELATED
+    jump: ACCEPT
+    comment: "Allow established connections back to LAN"
+  notify: save iptables
+  when: interface_check.results | selectattr('rc', 'equalto', 0) | list | length == 2

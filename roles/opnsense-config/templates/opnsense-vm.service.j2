@@ -1,0 +1,14 @@
+[Unit]
+Description=OPNsense Router VM
+After=libvirtd.service
+Requires=libvirtd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/virsh start {{ opnsense_vm_name }}
+ExecStop=/usr/bin/virsh shutdown {{ opnsense_vm_name }}
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

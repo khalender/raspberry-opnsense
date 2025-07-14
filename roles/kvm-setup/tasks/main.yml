@@ -1,0 +1,123 @@
+---
+- name: Debug variables
+  debug:
+    msg: |
+      opnsense_image_url: {{ opnsense_image_url | default('UNDEFINED') }}
+      ubuntu_iso_url: {{ ubuntu_iso_url | default('UNDEFINED') }}
+      opnsense_vm_name: {{ opnsense_vm_name | default('UNDEFINED') }}
+      docker_vm_name: {{ docker_vm_name | default('UNDEFINED') }}
+- name: Check system architecture
+  debug:
+    msg: "System architecture: {{ ansible_architecture }} - Using native ARM64 images"
+
+- name: Create VM storage directory
+  file:
+    path: /var/lib/libvirt/images
+    state: directory
+    owner: libvirt-qemu
+    group: libvirt-qemu
+    mode: "0755"
+
+- name: Install UEFI firmware for ARM64 VMs
+  apt:
+    name:
+      - qemu-efi-aarch64
+      - qemu-efi
+    state: present
+
+- name: Download OPNsense ARM64 VM image
+  get_url:
+    url: "{{ opnsense_image_url }}"
+    dest: "/var/lib/libvirt/images/opnsense-arm64.qcow2.bz2"
+    timeout: 3600
+    mode: "0644"
+  register: opnsense_download
+
+- name: Extract OPNsense VM image
+  command: bunzip2 /var/lib/libvirt/images/opnsense-arm64.qcow2.bz2
+  when: opnsense_download.changed
+  args:
+    creates: /var/lib/libvirt/images/opnsense-arm64.qcow2
+
+- name: Copy OPNsense image to VM disk
+  copy:
+    src: /var/lib/libvirt/images/opnsense-arm64.qcow2
+    dest: "/var/lib/libvirt/images/{{ opnsense_vm_name }}.qcow2"
+    remote_src: yes
+    owner: libvirt-qemu
+    group: libvirt-qemu
+    mode: "0644"
+  args:
+    creates: "/var/lib/libvirt/images/{{ opnsense_vm_name }}.qcow2"
+
+- name: Resize OPNsense VM disk to 20GB
+  command: >
+    qemu-img resize
+    /var/lib/libvirt/images/{{ opnsense_vm_name }}.qcow2 20G
+  changed_when: false
+
+- name: Download Ubuntu Server ARM64 ISO
+  get_url:
+    url: "{{ ubuntu_iso_url }}"
+    dest: "/var/lib/libvirt/images/ubuntu-server-arm64.iso"
+    timeout: 3600
+    mode: "0644"
+
+- name: Create Docker VM disk
+  command: >
+    qemu-img create -f qcow2
+    /var/lib/libvirt/images/{{ docker_vm_name }}.qcow2 40G
+  args:
+    creates: "/var/lib/libvirt/images/{{ docker_vm_name }}.qcow2"
+
+- name: Set proper ownership for VM files
+  file:
+    path: "{{ item }}"
+    owner: libvirt-qemu
+    group: libvirt-qemu
+    mode: "0644"
+  loop:
+    - "/var/lib/libvirt/images/{{ opnsense_vm_name }}.qcow2"
+    - "/var/lib/libvirt/images/{{ docker_vm_name }}.qcow2"
+    - "/var/lib/libvirt/images/ubuntu-server-arm64.iso"
+
+- name: Create OPNsense VM definition (ARM64 native)
+  template:
+    src: opnsense-vm-arm64.xml.j2
+    dest: "/tmp/{{ opnsense_vm_name }}.xml"
+    mode: "0644"
+
+- name: Create Docker VM definition (ARM64 native)
+  template:
+    src: docker-vm-arm64.xml.j2
+    dest: "/tmp/{{ docker_vm_name }}.xml"
+    mode: "0644"
+
+- name: Define OPNsense VM
+  virt:
+    name: "{{ opnsense_vm_name }}"
+    command: define
+    xml: "{{ lookup('file', '/tmp/' + opnsense_vm_name + '.xml') }}"
+
+- name: Define Docker VM
+  virt:
+    name: "{{ docker_vm_name }}"
+    command: define
+    xml: "{{ lookup('file', '/tmp/' + docker_vm_name + '.xml') }}"
+
+- name: Display VM information
+  debug:
+    msg: |
+      ARM64 native VMs have been defined:
+      - {{ opnsense_vm_name }}: Ready-to-use OPNsense image
+      - {{ docker_vm_name }}: Ubuntu 24.04 LTS for Docker
+
+      To start VMs:
+      sudo virsh start {{ opnsense_vm_name }}
+      sudo virsh start {{ docker_vm_name }}
+
+      To access VM consoles:
+      sudo virsh console {{ opnsense_vm_name }}
+      sudo virsh console {{ docker_vm_name }}
+
+      OPNsense will be accessible at: https://{{ opnsense_lan_ip }}

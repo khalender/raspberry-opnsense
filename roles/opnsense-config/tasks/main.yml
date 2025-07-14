@@ -1,0 +1,91 @@
+---
+- name: Wait for OPNsense VM to be defined
+  wait_for:
+    timeout: 30
+  delegate_to: localhost
+
+- name: Start OPNsense VM
+  virt:
+    name: "{{ opnsense_vm_name }}"
+    state: running
+  register: opnsense_vm_start
+
+- name: Wait for OPNsense VM to boot
+  wait_for:
+    timeout: 300
+  when: opnsense_vm_start.changed
+
+- name: Create OPNsense configuration directory
+  file:
+    path: /tmp/opnsense-config
+    state: directory
+    mode: "0755"
+
+- name: Generate OPNsense initial config
+  template:
+    src: config.xml.j2
+    dest: /tmp/opnsense-config/config.xml
+    mode: "0644"
+
+- name: Generate firewall rules configuration
+  template:
+    src: firewall-rules.xml.j2
+    dest: /tmp/opnsense-config/firewall-rules.xml
+    mode: "0644"
+
+- name: Copy OPNsense bootstrap script
+  copy:
+    src: opnsense-bootstrap.sh
+    dest: /tmp/opnsense-bootstrap.sh
+    mode: "0755"
+
+- name: Create OPNsense API configuration script
+  template:
+    src: opnsense-api-config.py.j2
+    dest: /tmp/opnsense-api-config.py
+    mode: "0755"
+
+- name: Install Python requests for OPNsense API
+  pip:
+    name: requests
+    state: present
+
+- name: Wait for OPNsense web interface to be available
+  uri:
+    url: "https://{{ opnsense_lan_ip }}"
+    method: GET
+    validate_certs: no
+    status_code: [200, 302, 401, 403]
+  register: opnsense_web_check
+  until: opnsense_web_check.status in [200, 302, 401, 403]
+  retries: 30
+  delay: 10
+  ignore_errors: yes
+
+- name: Display OPNsense access information
+  debug:
+    msg: |
+      OPNsense VM has been started and should be accessible at:
+      Web Interface: https://{{ opnsense_lan_ip }}
+      Default Username: root
+      Default Password: opnsense
+
+      Please complete the initial setup wizard manually or run:
+      /tmp/opnsense-bootstrap.sh
+
+      VM Console Access: sudo virsh console {{ opnsense_vm_name }}
+
+- name: Create OPNsense service management script
+  template:
+    src: manage-opnsense.sh.j2
+    dest: /usr/local/bin/manage-opnsense.sh
+    mode: "0755"
+
+- name: Create systemd service for OPNsense VM auto-start
+  template:
+    src: opnsense-vm.service.j2
+    dest: /etc/systemd/system/opnsense-vm.service
+    mode: "0644"
+  notify:
+    - reload systemd
+    - enable opnsense service

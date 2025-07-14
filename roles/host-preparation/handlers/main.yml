@@ -1,0 +1,9 @@
+---
+- name: apply netplan
+  command: netplan apply
+
+- name: reload sysctl
+  command: sysctl -p /etc/sysctl.d/99-router.conf
+
+- name: save iptables
+  command: iptables-save > /etc/iptables/rules.v4
