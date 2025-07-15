@@ -29,9 +29,10 @@
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
       <source file='{{ vm_storage_path }}/ubuntu-server-arm64.iso'/>
-      <target dev='vdb' bus='virtio'/>
+      <target dev='sda' bus='scsi'/>
       <readonly/>
     </disk>
+    <controller type='scsi' index='0' model='virtio-scsi'/>
     <controller type='usb' index='0' model='qemu-xhci' ports='8'/>
     <controller type='pci' index='0' model='pcie-root'/>
     <controller type='pci' index='1' model='pcie-root-port'>
