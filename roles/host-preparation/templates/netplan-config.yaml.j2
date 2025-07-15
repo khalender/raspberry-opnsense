@@ -12,14 +12,7 @@ network:
       nameservers:
         addresses: [8.8.8.8, 1.1.1.1]
       optional: true
-
-    # LAN Interface (TP-Link UE300)
     {{ lan_interface }}:
-      dhcp4: false
-      optional: true
-
-    # Built-in Ethernet (disabled for router use)
-    eth0:
       dhcp4: false
       optional: true
 

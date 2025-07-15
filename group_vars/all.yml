@@ -23,7 +23,7 @@ blocked_categories:
 
 # Network Configuration (moved from inventory for consistency)
 wan_interface: eth2 # Realtek 8156 (WAN)
-lan_interface: eth1 # TP-Link UE300 (LAN)
+lan_interface: eth0 # Built-in Ethernet (LAN)
 bridge_interface: br0
 
 # VM Configuration
