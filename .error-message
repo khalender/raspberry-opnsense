@@ -1,2 +1,12 @@
+_______________________________________
+< TASK [kvm-setup : Define OPNsense VM] >
+ ---------------------------------------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+
 [WARNING]: 'xml' is given - ignoring 'name'
 fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "libvirtError: XML error: Attempted double use of PCI Address 0000:02:00.0"}
+ ____________
