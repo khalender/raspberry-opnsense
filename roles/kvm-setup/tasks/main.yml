@@ -12,7 +12,7 @@
 
 - name: Create VM storage directory
   file:
-    path: {{ vm_storage_path }}
+    path: "{{ vm_storage_path }}"
     state: directory
     owner: libvirt-qemu
     group: libvirt-qemu
@@ -28,47 +28,47 @@
 - name: Download OPNsense ARM64 VM image
   get_url:
     url: "{{ opnsense_image_url }}"
-    dest: "{{vm_storage_path}}/opnsense-arm64.qcow2.bz2"
+    dest: "{{ vm_storage_path }}/opnsense-arm64.qcow2.bz2"
     timeout: 3600
     mode: "0644"
   register: opnsense_download
 
 - name: Extract OPNsense VM image
-  command: bunzip2 {{vm_storage_path}}/opnsense-arm64.qcow2.bz2
+  command: bunzip2 "{{ vm_storage_path }}/opnsense-arm64.qcow2.bz2"
   when: opnsense_download.changed
   args:
-    creates: {{vm_storage_path}}/opnsense-arm64.qcow2
+    creates: "{{ vm_storage_path }}/opnsense-arm64.qcow2"
 
 - name: Copy OPNsense image to VM disk
   copy:
-    src: {{vm_storage_path}}/opnsense-arm64.qcow2
-    dest: "{{vm_storage_path}}/{{ opnsense_vm_name }}.qcow2"
+    src: "{{ vm_storage_path }}/opnsense-arm64.qcow2"
+    dest: "{{ vm_storage_path }}/{{ opnsense_vm_name }}.qcow2"
     remote_src: yes
     owner: libvirt-qemu
     group: libvirt-qemu
     mode: "0644"
   args:
-    creates: "{{vm_storage_path}}/{{ opnsense_vm_name }}.qcow2"
+    creates: "{{ vm_storage_path }}/{{ opnsense_vm_name }}.qcow2"
 
 - name: Resize OPNsense VM disk to 20GB
   command: >
     qemu-img resize
-    {{vm_storage_path}}/{{ opnsense_vm_name }}.qcow2 20G
+    {{ vm_storage_path }}/{{ opnsense_vm_name }}.qcow2 20G
   changed_when: false
 
 - name: Download Ubuntu Server ARM64 ISO
   get_url:
     url: "{{ ubuntu_iso_url }}"
-    dest: "{{vm_storage_path}}/ubuntu-server-arm64.iso"
+    dest: "{{ vm_storage_path }}/ubuntu-server-arm64.iso"
     timeout: 3600
     mode: "0644"
 
 - name: Create Docker VM disk
   command: >
     qemu-img create -f qcow2
-    {{vm_storage_path}}/{{ docker_vm_name }}.qcow2 40G
+    {{ vm_storage_path }}/{{ docker_vm_name }}.qcow2 40G
   args:
-    creates: "{{vm_storage_path}}/{{ docker_vm_name }}.qcow2"
+    creates: "{{ vm_storage_path }}/{{ docker_vm_name }}.qcow2"
 
 - name: Set proper ownership for VM files
   file:
