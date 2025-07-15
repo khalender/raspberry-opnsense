@@ -9,3 +9,13 @@
 
 An exception occurred during task execution. To see the full traceback, use -vvv. The error was: libvirt.libvirtError: Cannot access storage file '/media/pi/ext_drive_1TB/vm-storage/opnsense-router.qcow2' (as uid:64055, gid:64055): Permission denied
 fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "Cannot access storage file '/media/pi/ext_drive_1TB/vm-storage/opnsense-router.qcow2' (as uid:64055, gid:64055): Permission denied"}
+
+pi@raspberrypi:/media/pi/ext_drive_1TB/vm-storage $ ls -la
+total 9787844
+drwxr-xr-x 2 libvirt-qemu libvirt-qemu       4096 Jul 15 17:01 .
+drwxr-xr-x 4 pi           pi                 4096 Jul 15 19:32 ..
+-rw-r--r-- 1 libvirt-qemu libvirt-qemu     197248 Jul 15 17:01 docker-host.qcow2
+-rw-r--r-- 1 pi           pi           2948661248 Jul 15 14:44 opnsense-arm64.qcow2
+-rw-r--r-- 1 pi           pi           1202805684 Jul 15 16:33 opnsense-arm64.qcow2.bz2
+-rw-rw---- 1 libvirt-qemu libvirt-qemu 2948661568 Jul 15 19:51 opnsense-router.qcow2
+-rw-r--r-- 1 libvirt-qemu libvirt-qemu 2922393600 Jul 15 16:57 ubuntu-server-arm64.iso
