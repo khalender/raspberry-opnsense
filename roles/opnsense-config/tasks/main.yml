@@ -4,13 +4,48 @@
     timeout: 30
   delegate_to: localhost
 
+- name: Fix /media/pi directory permissions for libvirt access
+  file:
+    path: /media/pi
+    mode: "0755"
+    state: directory
+  become: true
+
+- name: Ensure all parent directories are accessible
+  file:
+    path: "{{ item }}"
+    mode: "0755"
+    state: directory
+  become: true
+  loop:
+    - "/media"
+    - "/media/pi"
+    - "/media/pi/ext_drive_1TB"
+    - "/media/pi/ext_drive_1TB/vm-storage"
+
+- name: Ensure VM storage directory exists with proper permissions
+  file:
+    path: "{{ vm_storage_path }}"
+    state: directory
+    owner: "libvirt-qemu"
+    group: "kvm"
+    mode: "0755"
+    recurse: yes
+  become: true
+
 - name: Ensure libvirt-qemu has access to the VM disk image
   file:
     path: "{{ vm_storage_path }}/{{ opnsense_vm_name }}.qcow2"
     owner: "libvirt-qemu"
-    group: "libvirt-qemu"
+    group: "kvm"
     mode: "0660"
   become: true
+
+- name: Test libvirt-qemu access to VM disk
+  shell: sudo -u libvirt-qemu test -r "{{ vm_storage_path }}/{{ opnsense_vm_name }}.qcow2"
+  register: access_test
+  become: true
+  failed_when: access_test.rc != 0
 
 - name: Start OPNsense VM
   virt:
