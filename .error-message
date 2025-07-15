@@ -1,1 +1,9 @@
-fatal: [raspberry-pi]: FAILED! => {"changed": false, "gid": 1000, "group": "pi", "mode": "0755", "msg": "chown failed: [Errno 1] Operation not permitted: b'/media/pi/EXT-DRIVE-1/vm-storage'", "owner": "pi", "path": "/media/pi/EXT-DRIVE-1/vm-storage", "size": 32768, "state": "directory", "uid": 1000}
+< TASK [kvm-setup : Copy OPNsense image to VM disk] >
+ ---------------------------------------------------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+
+fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "Unsupported parameters for (ansible.legacy.copy) module: creates. Supported parameters include: _original_basename, attributes, backup, checksum, content, dest, directory_mode, follow, force, group, local_follow, mode, owner, remote_src, selevel, serole, setype, seuser, src, unsafe_writes, validate (attr)."}
