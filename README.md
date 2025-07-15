@@ -7,6 +7,8 @@ This Ansible playbook automates the setup of a Raspberry Pi 4 as a router using 
 - Raspberry Pi 4 (8GB RAM) with Ubuntu Server
 - Two USB-to-Ethernet adapters (as identified in your setup)
 - Ansible installed on the Pi or control machine
+- ssh keys 
+ `ssh-keygen -t ed25519 -C "khalender@khalender.sh"`
 
 ## Network Layout
 

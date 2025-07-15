@@ -22,3 +22,4 @@ sudo chown -R libvirt-qemu:libvirt-qemu "$IMAGES_DIR"
 echo "ARM64 images download completed!"
 echo "OPNsense: $IMAGES_DIR/opnsense-arm64.qcow2"
 echo "Ubuntu: $IMAGES_DIR/ubuntu-server-arm64.iso"
+
