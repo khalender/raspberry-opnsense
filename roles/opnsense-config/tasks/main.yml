@@ -17,32 +17,32 @@
 
 - name: Create OPNsense configuration directory
   file:
-    path: /tmp/opnsense-config
+    path: "{{ usb_storage_path }}/{{ opnsense_vm_name }}/opnsense-config"
     state: directory
     mode: "0755"
 
 - name: Generate OPNsense initial config
   template:
     src: config.xml.j2
-    dest: /tmp/opnsense-config/config.xml
+    dest: "{{ usb_storage_path }}/{{ opnsense_vm_name }}/opnsense-config/config.xml"
     mode: "0644"
 
 - name: Generate firewall rules configuration
   template:
     src: firewall-rules.xml.j2
-    dest: /tmp/opnsense-config/firewall-rules.xml
+    dest: "{{ usb_storage_path }}/{{ opnsense_vm_name }}/opnsense-config/firewall-rules.xml"
     mode: "0644"
 
 - name: Copy OPNsense bootstrap script
   copy:
     src: opnsense-bootstrap.sh
-    dest: /tmp/opnsense-bootstrap.sh
+    dest: "{{ usb_storage_path }}/{{ opnsense_vm_name }}/opnsense-bootstrap.sh"
     mode: "0755"
 
 - name: Create OPNsense API configuration script
   template:
     src: opnsense-api-config.py.j2
-    dest: /tmp/opnsense-api-config.py
+    dest: "{{ usb_storage_path }}/{{ opnsense_vm_name }}/opnsense-api-config.py"
     mode: "0755"
 
 - name: Install Python requests for OPNsense API

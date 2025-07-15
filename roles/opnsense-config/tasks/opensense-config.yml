@@ -1,0 +1,3 @@
+tmp_dir: "{{ usb_storage_path }}/{{ opnsense_vm_name }}"
+tmp_img: "{{ usb_storage_path }}/{{ opnsense_vm_name }}/opnsense.img"
+tmp_iso: "{{ usb_storage_path }}/{{ opnsense_vm_name }}/opnsense.iso"

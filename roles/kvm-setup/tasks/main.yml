@@ -39,6 +39,11 @@
   args:
     creates: "{{ vm_storage_path }}/opnsense-arm64.qcow2"
 
+- name: Check if VM disk exists
+  stat:
+    path: "{{ vm_storage_path }}/opnsense-arm64.qcow2"
+  register: vm_disk
+
 - name: Copy OPNsense image to VM disk
   copy:
     src: "{{ vm_storage_path }}/opnsense-arm64.qcow2"
@@ -47,8 +52,7 @@
     owner: libvirt-qemu
     group: libvirt-qemu
     mode: "0644"
-  args:
-    creates: "{{ vm_storage_path }}/{{ opnsense_vm_name }}.qcow2"
+  when : not vm_disk.stat.exists
 
 - name: Resize OPNsense VM disk to 20GB
   command: >
@@ -84,7 +88,7 @@
 - name: Create OPNsense VM definition (ARM64 native)
   template:
     src: opnsense-vm-arm64.xml.j2
-    dest: "/tmp/{{ opnsense_vm_name }}.xml"
+    dest: "{{ usb_storage_path }}/{{ opnsense_vm_name }}.xml"
     mode: "0644"
 
 - name: Create Docker VM definition (ARM64 native)
@@ -97,13 +101,13 @@
   virt:
     name: "{{ opnsense_vm_name }}"
     command: define
-    xml: "{{ lookup('file', '/tmp/' + opnsense_vm_name + '.xml') }}"
+    xml: "{{ lookup('file', '{{ usb_storage_path }}/' + {{ opnsense_vm_name }} + '.xml') }}"
 
 - name: Define Docker VM
   virt:
     name: "{{ docker_vm_name }}"
     command: define
-    xml: "{{ lookup('file', '/tmp/' + docker_vm_name + '.xml') }}"
+    xml: "{{ lookup('file', '{{ usb_storage_path }}' + {{ docker_vm_name }} + '.xml') }}"
 
 - name: Display VM information
   debug:
