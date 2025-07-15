@@ -1,5 +1,5 @@
 echo "Running Ansible setup..."
-ansible-playbook -i ansible/inventory/hosts ansible/playbooks/main.yml
+ansible-playbook -i ../inventory/hosts ../main.yml
 
 echo ""
 echo "=== Setup Complete ==="
