@@ -3,9 +3,9 @@
 
 set -e
 
-IMAGES_DIR="/var/lib/libvirt/images"
+IMAGES_DIR="/media/pi/EXT-DRIVE-1/vm-storage"
 
-echo "Creating images directory..."
+echo "Creating images directory on external USB drive..."
 sudo mkdir -p "$IMAGES_DIR"
 
 echo "Downloading OPNsense ARM64 VM image..."
@@ -20,5 +20,5 @@ echo "Setting permissions..."
 sudo chown -R libvirt-qemu:libvirt-qemu "$IMAGES_DIR"
 
 echo "ARM64 images download completed!"
-echo "OPNsense: opnsense-arm64.qcow2"
-echo "Ubuntu: ubuntu-server-arm64.iso"
+echo "OPNsense: $IMAGES_DIR/opnsense-arm64.qcow2"
+echo "Ubuntu: $IMAGES_DIR/ubuntu-server-arm64.iso"

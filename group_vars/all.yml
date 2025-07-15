@@ -41,3 +41,19 @@ lan_network: "10.0.0.0/24"
 opnsense_wan_ip: "192.168.1.100"
 opnsense_lan_ip: "10.0.0.1"
 docker_host_ip: "10.0.0.10"
+
+# usb storage
+usb_storage_path: "/media/pi/EXT-DRIVE-1"
+
+# storage paths
+storage:
+  opnsense: "{{ usb_storage_path }}/opnsense"
+  docker: "{{ usb_storage_path }}/docker"
+
+#vm storage
+vm_storage_path: "{{ usb_storage_path }}/vm-storage"
+
+# VM storage configuration
+vm_storage:
+  opnsense: "{{ storage.opnsense }}/opnsense.qcow2"
+  docker: "{{ storage.docker }}/docker.qcow2"
