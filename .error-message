@@ -1,9 +1,11 @@
-< TASK [kvm-setup : Define Docker VM] >
- -------------------------------------
+ ____________________________________________
+< TASK [opnsense-config : Start OPNsense VM] >
+ --------------------------------------------
         \   ^__^
          \  (oo)\_______
             (__)\       )\/\
                 ||----w |
                 ||     ||
 
-fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "libvirtError: unsupported configuration: disk type of 'vdb' does not support ejectable media"}
+An exception occurred during task execution. To see the full traceback, use -vvv. The error was: libvirt.libvirtError: Cannot access storage file '/media/pi/ext_drive_1TB/vm-storage/opnsense-router.qcow2' (as uid:64055, gid:64055): Permission denied
+fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "Cannot access storage file '/media/pi/ext_drive_1TB/vm-storage/opnsense-router.qcow2' (as uid:64055, gid:64055): Permission denied"}
