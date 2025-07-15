@@ -101,13 +101,13 @@
   virt:
     name: "{{ opnsense_vm_name }}"
     command: define
-    xml: "{{ lookup('file', '{{ usb_storage_path }}/' + {{ opnsense_vm_name }} + '.xml') }}"
+    xml: "{{ lookup('file', usb_storage_path + '/' + opnsense_vm_name + '.xml') }}"
 
 - name: Define Docker VM
   virt:
     name: "{{ docker_vm_name }}"
     command: define
-    xml: "{{ lookup('file', '{{ usb_storage_path }}' + {{ docker_vm_name }} + '.xml') }}"
+    xml: "{{ lookup('file',  usb_storage_path  + '/' + docker_vm_name  + '.xml') }}"
 
 - name: Display VM information
   debug:

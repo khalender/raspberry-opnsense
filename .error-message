@@ -1,9 +1,2 @@
-< TASK [kvm-setup : Copy OPNsense image to VM disk] >
- ---------------------------------------------------
-        \   ^__^
-         \  (oo)\_______
-            (__)\       )\/\
-                ||----w |
-                ||     ||
-
-fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "Unsupported parameters for (ansible.legacy.copy) module: creates. Supported parameters include: _original_basename, attributes, backup, checksum, content, dest, directory_mode, follow, force, group, local_follow, mode, owner, remote_src, selevel, serole, setype, seuser, src, unsafe_writes, validate (attr)."}
+[WARNING]: 'xml' is given - ignoring 'name'
+fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "libvirtError: XML error: Attempted double use of PCI Address 0000:02:00.0"}
