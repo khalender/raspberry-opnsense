@@ -4,6 +4,14 @@
     timeout: 30
   delegate_to: localhost
 
+- name: Ensure libvirt-qemu has access to the VM disk image
+  file:
+    path: "{{ usb_storage_path }}/{{ opnsense_vm_name }}.qcow2"
+    owner: "libvirt-qemu"
+    group: "libvirt-qemu"
+    mode: "0660"
+  become: true
+
 - name: Start OPNsense VM
   virt:
     name: "{{ opnsense_vm_name }}"
