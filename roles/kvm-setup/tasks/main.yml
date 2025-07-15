@@ -41,7 +41,7 @@
 
 - name: Check if VM disk exists
   stat:
-    path: "{{ vm_storage_path }}/opnsense-arm64.qcow2"
+    path: "{{ vm_storage_path }}/{{ opnsense_vm_name }}.qcow2"
   register: vm_disk
 
 - name: Copy OPNsense image to VM disk
@@ -52,7 +52,7 @@
     owner: libvirt-qemu
     group: libvirt-qemu
     mode: "0644"
-  when : not vm_disk.stat.exists
+  when: not vm_disk.stat.exists
 
 - name: Resize OPNsense VM disk to 20GB
   command: >
