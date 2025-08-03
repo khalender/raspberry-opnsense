@@ -12,8 +12,8 @@ This Ansible playbook automates the setup of a Raspberry Pi 4 as a router using 
 
 ## Network Layout
 
-- **WAN Interface**: eth2 (Realtek 8156) - Connected to main router
-- **LAN Interface**: eth1 (TP-Link UE300) - Internal network
+- **WAN Interface**: eth1 (Realtek 8156) - Connected to main router
+- **LAN Interface**: eth0 (TP-Link UE300) - Internal network
 - **Bridge**: br0 - Connects VMs to LAN
 
 ## Memory Allocation
