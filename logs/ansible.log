@@ -1,0 +1,651 @@
+2025-08-04 18:31:02,694 p=22507 u=pi n=ansible | PLAY [Setup Raspberry Pi Router with OPNsense and Docker] ****************************************************
+2025-08-04 18:31:02,742 p=22507 u=pi n=ansible | TASK [Gathering Facts] ***************************************************************************************
+2025-08-04 18:31:06,080 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:06,103 p=22507 u=pi n=ansible | TASK [Update system packages] ********************************************************************************
+2025-08-04 18:31:24,034 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:24,059 p=22507 u=pi n=ansible | TASK [Install required packages] *****************************************************************************
+2025-08-04 18:31:29,176 p=22507 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 18:31:29,242 p=22507 u=pi n=ansible | TASK [host-preparation : Check if running on Raspberry Pi] ***************************************************
+2025-08-04 18:31:29,334 p=22507 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 18:31:29,362 p=22507 u=pi n=ansible | TASK [host-preparation : Display system information] *********************************************************
+2025-08-04 18:31:29,405 p=22507 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System: Linux\nArchitecture: aarch64\nDistribution: Debian 12.11\nKernel: 6.12.34+rpt-rpi-v8\nMemory: 7820MB\n"
+}
+2025-08-04 18:31:29,433 p=22507 u=pi n=ansible | TASK [host-preparation : Check available network interfaces] *************************************************
+2025-08-04 18:31:30,400 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:30,424 p=22507 u=pi n=ansible | TASK [host-preparation : Display available interfaces] *******************************************************
+2025-08-04 18:31:30,463 p=22507 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "Available network interfaces: ['lo', 'eth0', 'eth1', 'wlan0', 'br0']"
+}
+2025-08-04 18:31:30,489 p=22507 u=pi n=ansible | TASK [host-preparation : Create netplan directory] ***********************************************************
+2025-08-04 18:31:31,470 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:31,496 p=22507 u=pi n=ansible | TASK [host-preparation : Remove default netplan configuration] ***********************************************
+2025-08-04 18:31:32,106 p=22507 u=pi n=ansible | changed: [raspberry-pi] => (item=/etc/netplan/01-router-config.yaml)
+2025-08-04 18:31:32,133 p=22507 u=pi n=ansible | TASK [host-preparation : Configure network interfaces] *******************************************************
+2025-08-04 18:31:34,064 p=22507 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 18:31:34,091 p=22507 u=pi n=ansible | TASK [host-preparation : Enable IP forwarding] ***************************************************************
+2025-08-04 18:31:35,244 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:35,270 p=22507 u=pi n=ansible | TASK [host-preparation : Create bridge setup script] *********************************************************
+2025-08-04 18:31:36,413 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:36,440 p=22507 u=pi n=ansible | TASK [host-preparation : Install bridge utilities] ***********************************************************
+2025-08-04 18:31:39,337 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:39,361 p=22507 u=pi n=ansible | TASK [host-preparation : Check if interfaces exist] **********************************************************
+2025-08-04 18:31:39,964 p=22507 u=pi n=ansible | ok: [raspberry-pi] => (item=eth1)
+2025-08-04 18:31:40,534 p=22507 u=pi n=ansible | ok: [raspberry-pi] => (item=eth0)
+2025-08-04 18:31:40,562 p=22507 u=pi n=ansible | TASK [host-preparation : Display interface status] ***********************************************************
+2025-08-04 18:31:40,624 p=22507 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth1', 'start': '2025-08-04 18:31:39.867868', 'end': '2025-08-04 18:31:39.878350', 'delta': '0:00:00.010482', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth1', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000', '    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth1', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth1 status:\nEXISTS - 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 18:31:40,639 p=22507 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth0', 'start': '2025-08-04 18:31:40.444634', 'end': '2025-08-04 18:31:40.455652', 'delta': '0:00:00.011018', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth0', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000', '    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth0', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth0 status:\nEXISTS - 2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 18:31:40,669 p=22507 u=pi n=ansible | TASK [host-preparation : Setup network bridges (only if interfaces exist)] ***********************************
+2025-08-04 18:31:41,470 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:41,496 p=22507 u=pi n=ansible | TASK [host-preparation : Configure iptables for routing] *****************************************************
+2025-08-04 18:31:42,511 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:42,538 p=22507 u=pi n=ansible | TASK [host-preparation : Allow forwarding between interfaces] ************************************************
+2025-08-04 18:31:43,263 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:43,288 p=22507 u=pi n=ansible | TASK [host-preparation : Allow established connections back] *************************************************
+2025-08-04 18:31:43,976 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:44,022 p=22507 u=pi n=ansible | TASK [kvm-setup : Debug variables] ***************************************************************************
+2025-08-04 18:31:44,120 p=22507 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "opnsense_image_url: https://github.com/maurice-w/opnsense-vm-images/releases/download/25.1/OPNsense-25.1-ufs-efi-vm-aarch64.qcow2.bz2\nubuntu_iso_url: https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-24.04.2-live-server-arm64.iso\nopnsense_vm_name: opnsense-router\ndocker_vm_name: docker-host\n"
+}
+2025-08-04 18:31:44,153 p=22507 u=pi n=ansible | TASK [kvm-setup : Check system architecture] *****************************************************************
+2025-08-04 18:31:44,200 p=22507 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System architecture: aarch64 - Using native ARM64 images"
+}
+2025-08-04 18:31:44,224 p=22507 u=pi n=ansible | TASK [kvm-setup : Create VM storage directory] ***************************************************************
+2025-08-04 18:31:44,836 p=22507 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 18:31:44,861 p=22507 u=pi n=ansible | TASK [kvm-setup : Install UEFI firmware for ARM64 VMs] *******************************************************
+2025-08-04 18:31:47,744 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:47,769 p=22507 u=pi n=ansible | TASK [kvm-setup : Download OPNsense ARM64 VM image] **********************************************************
+2025-08-04 18:31:49,551 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:31:49,577 p=22507 u=pi n=ansible | TASK [kvm-setup : Extract OPNsense VM image] *****************************************************************
+2025-08-04 18:31:49,610 p=22507 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 18:31:49,637 p=22507 u=pi n=ansible | TASK [kvm-setup : Check if VM disk exists] *******************************************************************
+2025-08-04 18:32:45,717 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:32:45,740 p=22507 u=pi n=ansible | TASK [kvm-setup : Copy OPNsense image to VM disk] ************************************************************
+2025-08-04 18:32:45,775 p=22507 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 18:32:45,801 p=22507 u=pi n=ansible | TASK [kvm-setup : Resize OPNsense VM disk to 20GB] ***********************************************************
+2025-08-04 18:32:46,473 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:32:46,499 p=22507 u=pi n=ansible | TASK [kvm-setup : Download Ubuntu Server ARM64 ISO] **********************************************************
+2025-08-04 18:32:47,816 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:32:47,845 p=22507 u=pi n=ansible | TASK [kvm-setup : Create Docker VM disk] *********************************************************************
+2025-08-04 18:32:48,430 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:32:48,457 p=22507 u=pi n=ansible | TASK [kvm-setup : Set proper ownership for VM files] *********************************************************
+2025-08-04 18:32:49,083 p=22507 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/opnsense-router.qcow2)
+2025-08-04 18:32:49,682 p=22507 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/docker-host.qcow2)
+2025-08-04 18:32:50,249 p=22507 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/ubuntu-server-arm64.iso)
+2025-08-04 18:32:50,277 p=22507 u=pi n=ansible | TASK [kvm-setup : Create OPNsense VM definition (ARM64 native)] **********************************************
+2025-08-04 18:32:51,472 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:32:51,497 p=22507 u=pi n=ansible | TASK [kvm-setup : Create Docker VM definition (ARM64 native)] ************************************************
+2025-08-04 18:32:52,667 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:32:52,693 p=22507 u=pi n=ansible | TASK [kvm-setup : Define OPNsense VM] ************************************************************************
+2025-08-04 18:32:54,034 p=22507 u=pi n=ansible | [WARNING]: 'xml' is given - ignoring 'name'
+
+2025-08-04 18:32:54,034 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:32:54,067 p=22507 u=pi n=ansible | TASK [kvm-setup : Define Docker VM] **************************************************************************
+2025-08-04 18:32:54,748 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:32:54,773 p=22507 u=pi n=ansible | TASK [kvm-setup : Display VM information] ********************************************************************
+2025-08-04 18:32:54,817 p=22507 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "ARM64 native VMs have been defined:\n- opnsense-router: Ready-to-use OPNsense image\n- docker-host: Ubuntu 24.04 LTS for Docker\n\nTo start VMs:\nsudo virsh start opnsense-router\nsudo virsh start docker-host\n\nTo access VM consoles:\nsudo virsh console opnsense-router\nsudo virsh console docker-host\n\nOPNsense will be accessible at: https://10.0.10.1\n"
+}
+2025-08-04 18:32:54,869 p=22507 u=pi n=ansible | TASK [opnsense-config : Wait for OPNsense VM to be defined] **************************************************
+2025-08-04 18:33:25,903 p=22507 u=pi n=ansible | ok: [raspberry-pi -> localhost]
+2025-08-04 18:33:25,934 p=22507 u=pi n=ansible | TASK [opnsense-config : Fix /media/pi directory permissions for libvirt access] ******************************
+2025-08-04 18:33:26,539 p=22507 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 18:33:26,563 p=22507 u=pi n=ansible | TASK [opnsense-config : Ensure all parent directories are accessible] ****************************************
+2025-08-04 18:33:27,188 p=22507 u=pi n=ansible | ok: [raspberry-pi] => (item=/media)
+2025-08-04 18:33:27,756 p=22507 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi)
+2025-08-04 18:33:28,327 p=22507 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB)
+2025-08-04 18:33:28,887 p=22507 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage)
+2025-08-04 18:33:28,915 p=22507 u=pi n=ansible | TASK [opnsense-config : Ensure VM storage directory exists with proper permissions] **************************
+2025-08-04 18:33:29,526 p=22507 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 18:33:29,551 p=22507 u=pi n=ansible | TASK [opnsense-config : Ensure libvirt-qemu has access to the VM disk image] *********************************
+2025-08-04 18:33:30,153 p=22507 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 18:33:30,177 p=22507 u=pi n=ansible | TASK [opnsense-config : Test libvirt-qemu access to VM disk] *************************************************
+2025-08-04 18:33:30,786 p=22507 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 18:33:30,812 p=22507 u=pi n=ansible | TASK [opnsense-config : Start OPNsense VM] *******************************************************************
+2025-08-04 18:33:32,688 p=22507 u=pi n=ansible | An exception occurred during task execution. To see the full traceback, use -vvv. The error was: libvirt.libvirtError: Unable to get index for interface eth2: No such device
+2025-08-04 18:33:32,689 p=22507 u=pi n=ansible | fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "Unable to get index for interface eth2: No such device"}
+2025-08-04 18:33:32,693 p=22507 u=pi n=ansible | PLAY RECAP ***************************************************************************************************
+2025-08-04 18:33:32,694 p=22507 u=pi n=ansible | raspberry-pi               : ok=39   changed=8    unreachable=0    failed=1    skipped=3    rescued=0    ignored=0   
+2025-08-04 20:52:41,349 p=26236 u=pi n=ansible | PLAY [Setup Raspberry Pi Router with OPNsense and Docker] **********************
+2025-08-04 20:52:41,395 p=26236 u=pi n=ansible | TASK [Gathering Facts] *********************************************************
+2025-08-04 20:52:44,303 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:52:44,328 p=26236 u=pi n=ansible | TASK [Update system packages] **************************************************
+2025-08-04 20:52:51,846 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:52:51,871 p=26236 u=pi n=ansible | TASK [Install required packages] ***********************************************
+2025-08-04 20:52:56,898 p=26236 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 20:52:56,963 p=26236 u=pi n=ansible | TASK [host-preparation : Check if running on Raspberry Pi] *********************
+2025-08-04 20:52:57,051 p=26236 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 20:52:57,075 p=26236 u=pi n=ansible | TASK [host-preparation : Display system information] ***************************
+2025-08-04 20:52:57,123 p=26236 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System: Linux\nArchitecture: aarch64\nDistribution: Debian 12.11\nKernel: 6.12.34+rpt-rpi-v8\nMemory: 7820MB\n"
+}
+2025-08-04 20:52:57,147 p=26236 u=pi n=ansible | TASK [host-preparation : Check available network interfaces] *******************
+2025-08-04 20:52:58,104 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:52:58,128 p=26236 u=pi n=ansible | TASK [host-preparation : Display available interfaces] *************************
+2025-08-04 20:52:58,166 p=26236 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "Available network interfaces: ['lo', 'eth0', 'eth1', 'wlan0', 'br0']"
+}
+2025-08-04 20:52:58,191 p=26236 u=pi n=ansible | TASK [host-preparation : Create netplan directory] *****************************
+2025-08-04 20:52:59,174 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:52:59,199 p=26236 u=pi n=ansible | TASK [host-preparation : Remove default netplan configuration] *****************
+2025-08-04 20:52:59,804 p=26236 u=pi n=ansible | changed: [raspberry-pi] => (item=/etc/netplan/01-router-config.yaml)
+2025-08-04 20:52:59,830 p=26236 u=pi n=ansible | TASK [host-preparation : Configure network interfaces] *************************
+2025-08-04 20:53:01,711 p=26236 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 20:53:01,738 p=26236 u=pi n=ansible | TASK [host-preparation : Enable IP forwarding] *********************************
+2025-08-04 20:53:02,880 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:53:02,902 p=26236 u=pi n=ansible | TASK [host-preparation : Create bridge setup script] ***************************
+2025-08-04 20:53:04,047 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:53:04,071 p=26236 u=pi n=ansible | TASK [host-preparation : Install bridge utilities] *****************************
+2025-08-04 20:53:06,925 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:53:06,949 p=26236 u=pi n=ansible | TASK [host-preparation : Check if interfaces exist] ****************************
+2025-08-04 20:53:07,552 p=26236 u=pi n=ansible | ok: [raspberry-pi] => (item=eth1)
+2025-08-04 20:53:08,101 p=26236 u=pi n=ansible | ok: [raspberry-pi] => (item=eth0)
+2025-08-04 20:53:08,127 p=26236 u=pi n=ansible | TASK [host-preparation : Display interface status] *****************************
+2025-08-04 20:53:08,188 p=26236 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth1', 'start': '2025-08-04 20:53:07.455567', 'end': '2025-08-04 20:53:07.466461', 'delta': '0:00:00.010894', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth1', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000', '    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth1', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth1 status:\nEXISTS - 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 20:53:08,199 p=26236 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth0', 'start': '2025-08-04 20:53:08.013048', 'end': '2025-08-04 20:53:08.023657', 'delta': '0:00:00.010609', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth0', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000', '    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth0', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth0 status:\nEXISTS - 2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 20:53:08,226 p=26236 u=pi n=ansible | TASK [host-preparation : Setup network bridges (only if interfaces exist)] *****
+2025-08-04 20:53:09,019 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:53:09,046 p=26236 u=pi n=ansible | TASK [host-preparation : Configure iptables for routing] ***********************
+2025-08-04 20:53:10,080 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:53:10,105 p=26236 u=pi n=ansible | TASK [host-preparation : Allow forwarding between interfaces] ******************
+2025-08-04 20:53:10,793 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:53:10,818 p=26236 u=pi n=ansible | TASK [host-preparation : Allow established connections back] *******************
+2025-08-04 20:53:11,638 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:53:11,681 p=26236 u=pi n=ansible | TASK [kvm-setup : Debug variables] *********************************************
+2025-08-04 20:53:11,773 p=26236 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "opnsense_image_url: https://github.com/maurice-w/opnsense-vm-images/releases/download/25.1/OPNsense-25.1-ufs-efi-vm-aarch64.qcow2.bz2\nubuntu_iso_url: https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-24.04.2-live-server-arm64.iso\nopnsense_vm_name: opnsense-router\ndocker_vm_name: docker-host\n"
+}
+2025-08-04 20:53:11,797 p=26236 u=pi n=ansible | TASK [kvm-setup : Check system architecture] ***********************************
+2025-08-04 20:53:11,838 p=26236 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System architecture: aarch64 - Using native ARM64 images"
+}
+2025-08-04 20:53:11,865 p=26236 u=pi n=ansible | TASK [kvm-setup : Create VM storage directory] *********************************
+2025-08-04 20:53:12,471 p=26236 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 20:53:12,495 p=26236 u=pi n=ansible | TASK [kvm-setup : Install UEFI firmware for ARM64 VMs] *************************
+2025-08-04 20:53:15,329 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:53:15,353 p=26236 u=pi n=ansible | TASK [kvm-setup : Download OPNsense ARM64 VM image] ****************************
+2025-08-04 20:53:17,116 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:53:17,142 p=26236 u=pi n=ansible | TASK [kvm-setup : Extract OPNsense VM image] ***********************************
+2025-08-04 20:53:17,175 p=26236 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 20:53:17,200 p=26236 u=pi n=ansible | TASK [kvm-setup : Check if VM disk exists] *************************************
+2025-08-04 20:53:17,780 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:53:17,805 p=26236 u=pi n=ansible | TASK [kvm-setup : Copy OPNsense image to VM disk] ******************************
+2025-08-04 20:55:25,675 p=26236 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 20:55:25,700 p=26236 u=pi n=ansible | TASK [kvm-setup : Resize OPNsense VM disk to 20GB] *****************************
+2025-08-04 20:55:26,396 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:55:26,419 p=26236 u=pi n=ansible | TASK [kvm-setup : Download Ubuntu Server ARM64 ISO] ****************************
+2025-08-04 20:55:27,731 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:55:27,755 p=26236 u=pi n=ansible | TASK [kvm-setup : Create Docker VM disk] ***************************************
+2025-08-04 20:55:28,336 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:55:28,360 p=26236 u=pi n=ansible | TASK [kvm-setup : Set proper ownership for VM files] ***************************
+2025-08-04 20:55:28,988 p=26236 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/opnsense-router.qcow2)
+2025-08-04 20:55:29,554 p=26236 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/docker-host.qcow2)
+2025-08-04 20:55:30,127 p=26236 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/ubuntu-server-arm64.iso)
+2025-08-04 20:55:30,154 p=26236 u=pi n=ansible | TASK [kvm-setup : Create OPNsense VM definition (ARM64 native)] ****************
+2025-08-04 20:55:31,361 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:55:31,385 p=26236 u=pi n=ansible | TASK [kvm-setup : Create Docker VM definition (ARM64 native)] ******************
+2025-08-04 20:55:32,575 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:55:32,600 p=26236 u=pi n=ansible | TASK [kvm-setup : Define OPNsense VM] ******************************************
+2025-08-04 20:55:33,887 p=26236 u=pi n=ansible | [WARNING]: 'xml' is given - ignoring 'name'
+
+2025-08-04 20:55:33,888 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:55:33,920 p=26236 u=pi n=ansible | TASK [kvm-setup : Define Docker VM] ********************************************
+2025-08-04 20:55:34,603 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:55:34,628 p=26236 u=pi n=ansible | TASK [kvm-setup : Display VM information] **************************************
+2025-08-04 20:55:34,670 p=26236 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "ARM64 native VMs have been defined:\n- opnsense-router: Ready-to-use OPNsense image\n- docker-host: Ubuntu 24.04 LTS for Docker\n\nTo start VMs:\nsudo virsh start opnsense-router\nsudo virsh start docker-host\n\nTo access VM consoles:\nsudo virsh console opnsense-router\nsudo virsh console docker-host\n\nOPNsense will be accessible at: https://10.0.10.1\n"
+}
+2025-08-04 20:55:34,719 p=26236 u=pi n=ansible | TASK [opnsense-config : Wait for OPNsense VM to be defined] ********************
+2025-08-04 20:56:05,743 p=26236 u=pi n=ansible | ok: [raspberry-pi -> localhost]
+2025-08-04 20:56:05,768 p=26236 u=pi n=ansible | TASK [opnsense-config : Fix /media/pi directory permissions for libvirt access] ***
+2025-08-04 20:56:06,363 p=26236 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 20:56:06,388 p=26236 u=pi n=ansible | TASK [opnsense-config : Ensure all parent directories are accessible] **********
+2025-08-04 20:56:06,999 p=26236 u=pi n=ansible | ok: [raspberry-pi] => (item=/media)
+2025-08-04 20:56:07,570 p=26236 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi)
+2025-08-04 20:56:08,139 p=26236 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB)
+2025-08-04 20:56:08,705 p=26236 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage)
+2025-08-04 20:56:08,732 p=26236 u=pi n=ansible | TASK [opnsense-config : Ensure VM storage directory exists with proper permissions] ***
+2025-08-04 20:56:09,343 p=26236 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 20:56:09,367 p=26236 u=pi n=ansible | TASK [opnsense-config : Ensure libvirt-qemu has access to the VM disk image] ***
+2025-08-04 20:56:09,973 p=26236 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 20:56:09,996 p=26236 u=pi n=ansible | TASK [opnsense-config : Test libvirt-qemu access to VM disk] *******************
+2025-08-04 20:56:10,636 p=26236 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 20:56:10,661 p=26236 u=pi n=ansible | TASK [opnsense-config : Start OPNsense VM] *************************************
+2025-08-04 20:56:11,583 p=26236 u=pi n=ansible | An exception occurred during task execution. To see the full traceback, use -vvv. The error was: libvirt.libvirtError: Unable to get index for interface eth2: No such device
+2025-08-04 20:56:11,585 p=26236 u=pi n=ansible | fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "Unable to get index for interface eth2: No such device"}
+2025-08-04 20:56:11,588 p=26236 u=pi n=ansible | PLAY RECAP *********************************************************************
+2025-08-04 20:56:11,589 p=26236 u=pi n=ansible | raspberry-pi               : ok=40   changed=9    unreachable=0    failed=1    skipped=2    rescued=0    ignored=0   
+2025-08-04 21:01:35,921 p=28318 u=pi n=ansible | PLAY [Setup Raspberry Pi Router with OPNsense and Docker] **********************
+2025-08-04 21:01:35,967 p=28318 u=pi n=ansible | TASK [Gathering Facts] *********************************************************
+2025-08-04 21:01:38,892 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:01:38,916 p=28318 u=pi n=ansible | TASK [Update system packages] **************************************************
+2025-08-04 21:01:46,523 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:01:46,548 p=28318 u=pi n=ansible | TASK [Install required packages] ***********************************************
+2025-08-04 21:01:51,655 p=28318 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:01:51,723 p=28318 u=pi n=ansible | TASK [host-preparation : Check if running on Raspberry Pi] *********************
+2025-08-04 21:01:51,812 p=28318 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:01:51,837 p=28318 u=pi n=ansible | TASK [host-preparation : Display system information] ***************************
+2025-08-04 21:01:51,879 p=28318 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System: Linux\nArchitecture: aarch64\nDistribution: Debian 12.11\nKernel: 6.12.34+rpt-rpi-v8\nMemory: 7820MB\n"
+}
+2025-08-04 21:01:51,905 p=28318 u=pi n=ansible | TASK [host-preparation : Check available network interfaces] *******************
+2025-08-04 21:01:52,865 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:01:52,891 p=28318 u=pi n=ansible | TASK [host-preparation : Display available interfaces] *************************
+2025-08-04 21:01:52,930 p=28318 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "Available network interfaces: ['lo', 'eth0', 'eth1', 'wlan0', 'br0']"
+}
+2025-08-04 21:01:52,956 p=28318 u=pi n=ansible | TASK [host-preparation : Create netplan directory] *****************************
+2025-08-04 21:01:53,943 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:01:53,969 p=28318 u=pi n=ansible | TASK [host-preparation : Remove default netplan configuration] *****************
+2025-08-04 21:01:54,580 p=28318 u=pi n=ansible | changed: [raspberry-pi] => (item=/etc/netplan/01-router-config.yaml)
+2025-08-04 21:01:54,608 p=28318 u=pi n=ansible | TASK [host-preparation : Configure network interfaces] *************************
+2025-08-04 21:01:56,543 p=28318 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:01:56,570 p=28318 u=pi n=ansible | TASK [host-preparation : Enable IP forwarding] *********************************
+2025-08-04 21:01:57,713 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:01:57,738 p=28318 u=pi n=ansible | TASK [host-preparation : Create bridge setup script] ***************************
+2025-08-04 21:01:58,885 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:01:58,910 p=28318 u=pi n=ansible | TASK [host-preparation : Install bridge utilities] *****************************
+2025-08-04 21:02:01,833 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:02:01,858 p=28318 u=pi n=ansible | TASK [host-preparation : Check if interfaces exist] ****************************
+2025-08-04 21:02:02,463 p=28318 u=pi n=ansible | ok: [raspberry-pi] => (item=eth1)
+2025-08-04 21:02:03,010 p=28318 u=pi n=ansible | ok: [raspberry-pi] => (item=eth0)
+2025-08-04 21:02:03,037 p=28318 u=pi n=ansible | TASK [host-preparation : Display interface status] *****************************
+2025-08-04 21:02:03,101 p=28318 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth1', 'start': '2025-08-04 21:02:02.364939', 'end': '2025-08-04 21:02:02.375475', 'delta': '0:00:00.010536', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth1', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000', '    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth1', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth1 status:\nEXISTS - 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 21:02:03,112 p=28318 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth0', 'start': '2025-08-04 21:02:02.921659', 'end': '2025-08-04 21:02:02.932334', 'delta': '0:00:00.010675', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth0', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000', '    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth0', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth0 status:\nEXISTS - 2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 21:02:03,139 p=28318 u=pi n=ansible | TASK [host-preparation : Setup network bridges (only if interfaces exist)] *****
+2025-08-04 21:02:03,933 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:02:03,958 p=28318 u=pi n=ansible | TASK [host-preparation : Configure iptables for routing] ***********************
+2025-08-04 21:02:05,014 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:02:05,041 p=28318 u=pi n=ansible | TASK [host-preparation : Allow forwarding between interfaces] ******************
+2025-08-04 21:02:05,768 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:02:05,791 p=28318 u=pi n=ansible | TASK [host-preparation : Allow established connections back] *******************
+2025-08-04 21:02:06,516 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:02:06,562 p=28318 u=pi n=ansible | TASK [kvm-setup : Debug variables] *********************************************
+2025-08-04 21:02:06,655 p=28318 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "opnsense_image_url: https://github.com/maurice-w/opnsense-vm-images/releases/download/25.1/OPNsense-25.1-ufs-efi-vm-aarch64.qcow2.bz2\nubuntu_iso_url: https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-24.04.2-live-server-arm64.iso\nopnsense_vm_name: opnsense-router\ndocker_vm_name: docker-host\n"
+}
+2025-08-04 21:02:06,679 p=28318 u=pi n=ansible | TASK [kvm-setup : Check system architecture] ***********************************
+2025-08-04 21:02:06,718 p=28318 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System architecture: aarch64 - Using native ARM64 images"
+}
+2025-08-04 21:02:06,751 p=28318 u=pi n=ansible | TASK [kvm-setup : Create VM storage directory] *********************************
+2025-08-04 21:02:07,359 p=28318 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:02:07,383 p=28318 u=pi n=ansible | TASK [kvm-setup : Install UEFI firmware for ARM64 VMs] *************************
+2025-08-04 21:02:10,216 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:02:10,244 p=28318 u=pi n=ansible | TASK [kvm-setup : Download OPNsense ARM64 VM image] ****************************
+2025-08-04 21:02:12,044 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:02:12,071 p=28318 u=pi n=ansible | TASK [kvm-setup : Extract OPNsense VM image] ***********************************
+2025-08-04 21:02:12,105 p=28318 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:02:12,131 p=28318 u=pi n=ansible | TASK [kvm-setup : Check if VM disk exists] *************************************
+2025-08-04 21:02:12,715 p=28318 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:02:12,741 p=28318 u=pi n=ansible | TASK [kvm-setup : Copy OPNsense image to VM disk] ******************************
+2025-08-04 21:02:13,345 p=28318 u=pi n=ansible | fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "Source /media/pi/ext_drive_1TB/vm-storage/opnsense-arm64.qcow2 not found"}
+2025-08-04 21:02:13,348 p=28318 u=pi n=ansible | PLAY RECAP *********************************************************************
+2025-08-04 21:02:13,349 p=28318 u=pi n=ansible | raspberry-pi               : ok=24   changed=4    unreachable=0    failed=1    skipped=2    rescued=0    ignored=0   
+2025-08-04 21:24:48,956 p=29887 u=pi n=ansible | PLAY [Setup Raspberry Pi Router with OPNsense and Docker] ***************************************
+2025-08-04 21:24:49,001 p=29887 u=pi n=ansible | TASK [Gathering Facts] **************************************************************************
+2025-08-04 21:24:51,868 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:24:51,891 p=29887 u=pi n=ansible | TASK [Update system packages] *******************************************************************
+2025-08-04 21:24:59,410 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:24:59,435 p=29887 u=pi n=ansible | TASK [Install required packages] ****************************************************************
+2025-08-04 21:25:04,499 p=29887 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:25:04,563 p=29887 u=pi n=ansible | TASK [host-preparation : Check if running on Raspberry Pi] **************************************
+2025-08-04 21:25:04,650 p=29887 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:25:04,675 p=29887 u=pi n=ansible | TASK [host-preparation : Display system information] ********************************************
+2025-08-04 21:25:04,718 p=29887 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System: Linux\nArchitecture: aarch64\nDistribution: Debian 12.11\nKernel: 6.12.34+rpt-rpi-v8\nMemory: 7820MB\n"
+}
+2025-08-04 21:25:04,741 p=29887 u=pi n=ansible | TASK [host-preparation : Check available network interfaces] ************************************
+2025-08-04 21:25:05,701 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:05,725 p=29887 u=pi n=ansible | TASK [host-preparation : Display available interfaces] ******************************************
+2025-08-04 21:25:05,764 p=29887 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "Available network interfaces: ['lo', 'eth0', 'eth1', 'wlan0', 'br0']"
+}
+2025-08-04 21:25:05,790 p=29887 u=pi n=ansible | TASK [host-preparation : Create netplan directory] **********************************************
+2025-08-04 21:25:06,776 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:06,801 p=29887 u=pi n=ansible | TASK [host-preparation : Remove default netplan configuration] **********************************
+2025-08-04 21:25:07,410 p=29887 u=pi n=ansible | changed: [raspberry-pi] => (item=/etc/netplan/01-router-config.yaml)
+2025-08-04 21:25:07,436 p=29887 u=pi n=ansible | TASK [host-preparation : Configure network interfaces] ******************************************
+2025-08-04 21:25:09,316 p=29887 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:25:09,341 p=29887 u=pi n=ansible | TASK [host-preparation : Enable IP forwarding] **************************************************
+2025-08-04 21:25:10,493 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:10,517 p=29887 u=pi n=ansible | TASK [host-preparation : Create bridge setup script] ********************************************
+2025-08-04 21:25:11,658 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:11,683 p=29887 u=pi n=ansible | TASK [host-preparation : Install bridge utilities] **********************************************
+2025-08-04 21:25:14,538 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:14,563 p=29887 u=pi n=ansible | TASK [host-preparation : Check if interfaces exist] *********************************************
+2025-08-04 21:25:15,169 p=29887 u=pi n=ansible | ok: [raspberry-pi] => (item=eth1)
+2025-08-04 21:25:15,719 p=29887 u=pi n=ansible | ok: [raspberry-pi] => (item=eth0)
+2025-08-04 21:25:15,745 p=29887 u=pi n=ansible | TASK [host-preparation : Display interface status] **********************************************
+2025-08-04 21:25:15,807 p=29887 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth1', 'start': '2025-08-04 21:25:15.070960', 'end': '2025-08-04 21:25:15.081266', 'delta': '0:00:00.010306', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth1', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000', '    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth1', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth1 status:\nEXISTS - 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 21:25:15,819 p=29887 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth0', 'start': '2025-08-04 21:25:15.629458', 'end': '2025-08-04 21:25:15.640268', 'delta': '0:00:00.010810', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth0', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000', '    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth0', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth0 status:\nEXISTS - 2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 21:25:15,846 p=29887 u=pi n=ansible | TASK [host-preparation : Setup network bridges (only if interfaces exist)] **********************
+2025-08-04 21:25:16,680 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:16,704 p=29887 u=pi n=ansible | TASK [host-preparation : Configure iptables for routing] ****************************************
+2025-08-04 21:25:17,713 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:17,750 p=29887 u=pi n=ansible | TASK [host-preparation : Allow forwarding between interfaces] ***********************************
+2025-08-04 21:25:18,452 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:18,477 p=29887 u=pi n=ansible | TASK [host-preparation : Allow established connections back] ************************************
+2025-08-04 21:25:19,294 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:19,337 p=29887 u=pi n=ansible | TASK [kvm-setup : Debug variables] **************************************************************
+2025-08-04 21:25:19,433 p=29887 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "opnsense_image_url: https://github.com/maurice-w/opnsense-vm-images/releases/download/25.1/OPNsense-25.1-ufs-efi-vm-aarch64.qcow2.bz2\nubuntu_iso_url: https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-24.04.2-live-server-arm64.iso\nopnsense_vm_name: opnsense-router\ndocker_vm_name: docker-host\n"
+}
+2025-08-04 21:25:19,459 p=29887 u=pi n=ansible | TASK [kvm-setup : Check system architecture] ****************************************************
+2025-08-04 21:25:19,498 p=29887 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System architecture: aarch64 - Using native ARM64 images"
+}
+2025-08-04 21:25:19,525 p=29887 u=pi n=ansible | TASK [kvm-setup : Create VM storage directory] **************************************************
+2025-08-04 21:25:20,130 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:20,154 p=29887 u=pi n=ansible | TASK [kvm-setup : Install UEFI firmware for ARM64 VMs] ******************************************
+2025-08-04 21:25:22,970 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:25:22,994 p=29887 u=pi n=ansible | TASK [kvm-setup : Download OPNsense ARM64 VM image] *********************************************
+2025-08-04 21:27:22,556 p=29887 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:27:22,583 p=29887 u=pi n=ansible | TASK [kvm-setup : Extract OPNsense VM image] ****************************************************
+2025-08-04 21:27:23,167 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:27:23,191 p=29887 u=pi n=ansible | TASK [kvm-setup : Check if VM disk exists] ******************************************************
+2025-08-04 21:27:23,795 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:27:23,819 p=29887 u=pi n=ansible | TASK [kvm-setup : Copy OPNsense image to VM disk] ***********************************************
+2025-08-04 21:29:29,018 p=29887 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:29:29,043 p=29887 u=pi n=ansible | TASK [kvm-setup : Resize OPNsense VM disk to 20GB] **********************************************
+2025-08-04 21:29:29,690 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:29:29,714 p=29887 u=pi n=ansible | TASK [kvm-setup : Download Ubuntu Server ARM64 ISO] *********************************************
+2025-08-04 21:29:31,032 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:29:31,056 p=29887 u=pi n=ansible | TASK [kvm-setup : Create Docker VM disk] ********************************************************
+2025-08-04 21:29:31,635 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:29:31,660 p=29887 u=pi n=ansible | TASK [kvm-setup : Set proper ownership for VM files] ********************************************
+2025-08-04 21:29:32,281 p=29887 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/opnsense-router.qcow2)
+2025-08-04 21:29:32,850 p=29887 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/docker-host.qcow2)
+2025-08-04 21:29:33,411 p=29887 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/ubuntu-server-arm64.iso)
+2025-08-04 21:29:33,438 p=29887 u=pi n=ansible | TASK [kvm-setup : Create OPNsense VM definition (ARM64 native)] *********************************
+2025-08-04 21:29:34,635 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:29:34,661 p=29887 u=pi n=ansible | TASK [kvm-setup : Create Docker VM definition (ARM64 native)] ***********************************
+2025-08-04 21:29:35,859 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:29:35,884 p=29887 u=pi n=ansible | TASK [kvm-setup : Define OPNsense VM] ***********************************************************
+2025-08-04 21:29:37,056 p=29887 u=pi n=ansible | [WARNING]: 'xml' is given - ignoring 'name'
+
+2025-08-04 21:29:37,057 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:29:37,084 p=29887 u=pi n=ansible | TASK [kvm-setup : Define Docker VM] *************************************************************
+2025-08-04 21:29:37,769 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:29:37,792 p=29887 u=pi n=ansible | TASK [kvm-setup : Display VM information] *******************************************************
+2025-08-04 21:29:37,834 p=29887 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "ARM64 native VMs have been defined:\n- opnsense-router: Ready-to-use OPNsense image\n- docker-host: Ubuntu 24.04 LTS for Docker\n\nTo start VMs:\nsudo virsh start opnsense-router\nsudo virsh start docker-host\n\nTo access VM consoles:\nsudo virsh console opnsense-router\nsudo virsh console docker-host\n\nOPNsense will be accessible at: https://10.0.10.1\n"
+}
+2025-08-04 21:29:37,883 p=29887 u=pi n=ansible | TASK [opnsense-config : Wait for OPNsense VM to be defined] *************************************
+2025-08-04 21:30:08,932 p=29887 u=pi n=ansible | ok: [raspberry-pi -> localhost]
+2025-08-04 21:30:08,957 p=29887 u=pi n=ansible | TASK [opnsense-config : Fix /media/pi directory permissions for libvirt access] *****************
+2025-08-04 21:30:09,560 p=29887 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:30:09,583 p=29887 u=pi n=ansible | TASK [opnsense-config : Ensure all parent directories are accessible] ***************************
+2025-08-04 21:30:10,197 p=29887 u=pi n=ansible | ok: [raspberry-pi] => (item=/media)
+2025-08-04 21:30:10,763 p=29887 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi)
+2025-08-04 21:30:11,330 p=29887 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB)
+2025-08-04 21:30:11,891 p=29887 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage)
+2025-08-04 21:30:11,918 p=29887 u=pi n=ansible | TASK [opnsense-config : Ensure VM storage directory exists with proper permissions] *************
+2025-08-04 21:30:12,530 p=29887 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:30:12,555 p=29887 u=pi n=ansible | TASK [opnsense-config : Ensure libvirt-qemu has access to the VM disk image] ********************
+2025-08-04 21:30:13,162 p=29887 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:30:13,186 p=29887 u=pi n=ansible | TASK [opnsense-config : Test libvirt-qemu access to VM disk] ************************************
+2025-08-04 21:30:13,793 p=29887 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:30:13,817 p=29887 u=pi n=ansible | TASK [opnsense-config : Start OPNsense VM] ******************************************************
+2025-08-04 21:30:14,695 p=29887 u=pi n=ansible | An exception occurred during task execution. To see the full traceback, use -vvv. The error was: libvirt.libvirtError: Unable to get index for interface eth2: No such device
+2025-08-04 21:30:14,696 p=29887 u=pi n=ansible | fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "Unable to get index for interface eth2: No such device"}
+2025-08-04 21:30:14,699 p=29887 u=pi n=ansible | PLAY RECAP **************************************************************************************
+2025-08-04 21:30:14,700 p=29887 u=pi n=ansible | raspberry-pi               : ok=41   changed=9    unreachable=0    failed=1    skipped=1    rescued=0    ignored=0   
+2025-08-04 21:52:46,658 p=32475 u=pi n=ansible | PLAY [Setup Raspberry Pi Router with OPNsense and Docker] **********************
+2025-08-04 21:52:46,705 p=32475 u=pi n=ansible | TASK [Gathering Facts] *********************************************************
+2025-08-04 21:52:49,976 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:52:49,999 p=32475 u=pi n=ansible | TASK [Update system packages] **************************************************
+2025-08-04 21:52:57,548 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:52:57,575 p=32475 u=pi n=ansible | TASK [Install required packages] ***********************************************
+2025-08-04 21:53:02,760 p=32475 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:53:02,825 p=32475 u=pi n=ansible | TASK [host-preparation : Check if running on Raspberry Pi] *********************
+2025-08-04 21:53:02,919 p=32475 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:53:02,945 p=32475 u=pi n=ansible | TASK [host-preparation : Display system information] ***************************
+2025-08-04 21:53:02,987 p=32475 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System: Linux\nArchitecture: aarch64\nDistribution: Debian 12.11\nKernel: 6.12.34+rpt-rpi-v8\nMemory: 7820MB\n"
+}
+2025-08-04 21:53:03,011 p=32475 u=pi n=ansible | TASK [host-preparation : Check available network interfaces] *******************
+2025-08-04 21:53:03,953 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:03,979 p=32475 u=pi n=ansible | TASK [host-preparation : Display available interfaces] *************************
+2025-08-04 21:53:04,019 p=32475 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "Available network interfaces: ['lo', 'eth0', 'eth1', 'wlan0', 'br0']"
+}
+2025-08-04 21:53:04,046 p=32475 u=pi n=ansible | TASK [host-preparation : Create netplan directory] *****************************
+2025-08-04 21:53:05,070 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:05,096 p=32475 u=pi n=ansible | TASK [host-preparation : Remove default netplan configuration] *****************
+2025-08-04 21:53:05,713 p=32475 u=pi n=ansible | changed: [raspberry-pi] => (item=/etc/netplan/01-router-config.yaml)
+2025-08-04 21:53:05,741 p=32475 u=pi n=ansible | TASK [host-preparation : Configure network interfaces] *************************
+2025-08-04 21:53:07,647 p=32475 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:53:07,673 p=32475 u=pi n=ansible | TASK [host-preparation : Enable IP forwarding] *********************************
+2025-08-04 21:53:08,843 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:08,868 p=32475 u=pi n=ansible | TASK [host-preparation : Create bridge setup script] ***************************
+2025-08-04 21:53:10,087 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:10,112 p=32475 u=pi n=ansible | TASK [host-preparation : Install bridge utilities] *****************************
+2025-08-04 21:53:12,974 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:12,999 p=32475 u=pi n=ansible | TASK [host-preparation : Check if interfaces exist] ****************************
+2025-08-04 21:53:13,643 p=32475 u=pi n=ansible | ok: [raspberry-pi] => (item=eth1)
+2025-08-04 21:53:14,202 p=32475 u=pi n=ansible | ok: [raspberry-pi] => (item=eth0)
+2025-08-04 21:53:14,228 p=32475 u=pi n=ansible | TASK [host-preparation : Display interface status] *****************************
+2025-08-04 21:53:14,289 p=32475 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth1', 'start': '2025-08-04 21:53:13.530756', 'end': '2025-08-04 21:53:13.542353', 'delta': '0:00:00.011597', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth1', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000', '    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth1', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth1 status:\nEXISTS - 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 21:53:14,300 p=32475 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth0', 'start': '2025-08-04 21:53:14.112053', 'end': '2025-08-04 21:53:14.122674', 'delta': '0:00:00.010621', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth0', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000', '    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth0', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth0 status:\nEXISTS - 2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 21:53:14,329 p=32475 u=pi n=ansible | TASK [host-preparation : Setup network bridges (only if interfaces exist)] *****
+2025-08-04 21:53:15,156 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:15,181 p=32475 u=pi n=ansible | TASK [host-preparation : Configure iptables for routing] ***********************
+2025-08-04 21:53:16,198 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:16,224 p=32475 u=pi n=ansible | TASK [host-preparation : Allow forwarding between interfaces] ******************
+2025-08-04 21:53:17,045 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:17,070 p=32475 u=pi n=ansible | TASK [host-preparation : Allow established connections back] *******************
+2025-08-04 21:53:17,760 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:17,806 p=32475 u=pi n=ansible | TASK [kvm-setup : Debug variables] *********************************************
+2025-08-04 21:53:17,899 p=32475 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "opnsense_image_url: https://github.com/maurice-w/opnsense-vm-images/releases/download/25.1/OPNsense-25.1-ufs-efi-vm-aarch64.qcow2.bz2\nubuntu_iso_url: https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-24.04.2-live-server-arm64.iso\nopnsense_vm_name: opnsense-router\ndocker_vm_name: docker-host\n"
+}
+2025-08-04 21:53:17,936 p=32475 u=pi n=ansible | TASK [kvm-setup : Check system architecture] ***********************************
+2025-08-04 21:53:17,993 p=32475 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System architecture: aarch64 - Using native ARM64 images"
+}
+2025-08-04 21:53:18,021 p=32475 u=pi n=ansible | TASK [kvm-setup : Create VM storage directory] *********************************
+2025-08-04 21:53:18,632 p=32475 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:53:18,656 p=32475 u=pi n=ansible | TASK [kvm-setup : Install UEFI firmware for ARM64 VMs] *************************
+2025-08-04 21:53:21,523 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:21,550 p=32475 u=pi n=ansible | TASK [kvm-setup : Download OPNsense ARM64 VM image] ****************************
+2025-08-04 21:53:23,258 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:23,284 p=32475 u=pi n=ansible | TASK [kvm-setup : Extract OPNsense VM image] ***********************************
+2025-08-04 21:53:23,317 p=32475 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:53:23,344 p=32475 u=pi n=ansible | TASK [kvm-setup : Check if VM disk exists] *************************************
+2025-08-04 21:53:38,869 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:38,895 p=32475 u=pi n=ansible | TASK [kvm-setup : Copy OPNsense image to VM disk] ******************************
+2025-08-04 21:53:38,929 p=32475 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:53:38,958 p=32475 u=pi n=ansible | TASK [kvm-setup : Resize OPNsense VM disk to 20GB] *****************************
+2025-08-04 21:53:39,580 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:39,607 p=32475 u=pi n=ansible | TASK [kvm-setup : Download Ubuntu Server ARM64 ISO] ****************************
+2025-08-04 21:53:40,911 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:40,939 p=32475 u=pi n=ansible | TASK [kvm-setup : Create Docker VM disk] ***************************************
+2025-08-04 21:53:41,530 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:41,556 p=32475 u=pi n=ansible | TASK [kvm-setup : Set proper ownership for VM files] ***************************
+2025-08-04 21:53:42,181 p=32475 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/opnsense-router.qcow2)
+2025-08-04 21:53:42,755 p=32475 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/docker-host.qcow2)
+2025-08-04 21:53:43,360 p=32475 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/ubuntu-server-arm64.iso)
+2025-08-04 21:53:43,389 p=32475 u=pi n=ansible | TASK [kvm-setup : Create OPNsense VM definition (ARM64 native)] ****************
+2025-08-04 21:53:44,553 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:44,578 p=32475 u=pi n=ansible | TASK [kvm-setup : Create Docker VM definition (ARM64 native)] ******************
+2025-08-04 21:53:45,763 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:45,788 p=32475 u=pi n=ansible | TASK [kvm-setup : Define OPNsense VM] ******************************************
+2025-08-04 21:53:47,180 p=32475 u=pi n=ansible | [WARNING]: 'xml' is given - ignoring 'name'
+
+2025-08-04 21:53:47,180 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:47,211 p=32475 u=pi n=ansible | TASK [kvm-setup : Define Docker VM] ********************************************
+2025-08-04 21:53:47,896 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:53:47,922 p=32475 u=pi n=ansible | TASK [kvm-setup : Display VM information] **************************************
+2025-08-04 21:53:47,964 p=32475 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "ARM64 native VMs have been defined:\n- opnsense-router: Ready-to-use OPNsense image\n- docker-host: Ubuntu 24.04 LTS for Docker\n\nTo start VMs:\nsudo virsh start opnsense-router\nsudo virsh start docker-host\n\nTo access VM consoles:\nsudo virsh console opnsense-router\nsudo virsh console docker-host\n\nOPNsense will be accessible at: https://10.0.10.1\n"
+}
+2025-08-04 21:53:48,018 p=32475 u=pi n=ansible | TASK [opnsense-config : Wait for OPNsense VM to be defined] ********************
+2025-08-04 21:54:18,984 p=32475 u=pi n=ansible | ok: [raspberry-pi -> localhost]
+2025-08-04 21:54:19,010 p=32475 u=pi n=ansible | TASK [opnsense-config : Fix /media/pi directory permissions for libvirt access] ***
+2025-08-04 21:54:19,611 p=32475 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:54:19,639 p=32475 u=pi n=ansible | TASK [opnsense-config : Ensure all parent directories are accessible] **********
+2025-08-04 21:54:20,266 p=32475 u=pi n=ansible | ok: [raspberry-pi] => (item=/media)
+2025-08-04 21:54:20,839 p=32475 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi)
+2025-08-04 21:54:21,417 p=32475 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB)
+2025-08-04 21:54:21,984 p=32475 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage)
+2025-08-04 21:54:22,011 p=32475 u=pi n=ansible | TASK [opnsense-config : Ensure VM storage directory exists with proper permissions] ***
+2025-08-04 21:54:22,621 p=32475 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:54:22,648 p=32475 u=pi n=ansible | TASK [opnsense-config : Ensure libvirt-qemu has access to the VM disk image] ***
+2025-08-04 21:54:23,259 p=32475 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:54:23,283 p=32475 u=pi n=ansible | TASK [opnsense-config : Test libvirt-qemu access to VM disk] *******************
+2025-08-04 21:54:23,907 p=32475 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:54:23,932 p=32475 u=pi n=ansible | TASK [opnsense-config : Verify bridge interface exists] ************************
+2025-08-04 21:54:24,547 p=32475 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:54:24,572 p=32475 u=pi n=ansible | TASK [opnsense-config : Create bridge if not exists] ***************************
+2025-08-04 21:54:24,606 p=32475 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:54:24,633 p=32475 u=pi n=ansible | TASK [opnsense-config : Ensure bridge is up] ***********************************
+2025-08-04 21:54:24,669 p=32475 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:54:24,694 p=32475 u=pi n=ansible | TASK [opnsense-config : Add interface to bridge] *******************************
+2025-08-04 21:54:24,728 p=32475 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:54:24,754 p=32475 u=pi n=ansible | TASK [opnsense-config : Apply netplan configuration] ***************************
+2025-08-04 21:54:25,353 p=32475 u=pi n=ansible | fatal: [raspberry-pi]: FAILED! => {"changed": false, "cmd": "netplan apply", "msg": "[Errno 2] No such file or directory: b'netplan'", "rc": 2, "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+2025-08-04 21:54:25,356 p=32475 u=pi n=ansible | PLAY RECAP *********************************************************************
+2025-08-04 21:54:25,357 p=32475 u=pi n=ansible | raspberry-pi               : ok=40   changed=9    unreachable=0    failed=1    skipped=6    rescued=0    ignored=0   
+2025-08-04 21:58:39,898 p=34843 u=pi n=ansible | PLAY [Setup Raspberry Pi Router with OPNsense and Docker] **********************
+2025-08-04 21:58:39,945 p=34843 u=pi n=ansible | TASK [Gathering Facts] *********************************************************
+2025-08-04 21:58:42,792 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:58:42,815 p=34843 u=pi n=ansible | TASK [Update system packages] **************************************************
+2025-08-04 21:58:50,369 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:58:50,394 p=34843 u=pi n=ansible | TASK [Install required packages] ***********************************************
+2025-08-04 21:58:55,519 p=34843 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:58:55,585 p=34843 u=pi n=ansible | TASK [host-preparation : Check if running on Raspberry Pi] *********************
+2025-08-04 21:58:55,676 p=34843 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:58:55,701 p=34843 u=pi n=ansible | TASK [host-preparation : Display system information] ***************************
+2025-08-04 21:58:55,744 p=34843 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System: Linux\nArchitecture: aarch64\nDistribution: Debian 12.11\nKernel: 6.12.34+rpt-rpi-v8\nMemory: 7820MB\n"
+}
+2025-08-04 21:58:55,768 p=34843 u=pi n=ansible | TASK [host-preparation : Check available network interfaces] *******************
+2025-08-04 21:58:56,728 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:58:56,752 p=34843 u=pi n=ansible | TASK [host-preparation : Display available interfaces] *************************
+2025-08-04 21:58:56,791 p=34843 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "Available network interfaces: ['lo', 'eth0', 'eth1', 'wlan0', 'br0']"
+}
+2025-08-04 21:58:56,817 p=34843 u=pi n=ansible | TASK [host-preparation : Create netplan directory] *****************************
+2025-08-04 21:58:57,815 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:58:57,840 p=34843 u=pi n=ansible | TASK [host-preparation : Remove default netplan configuration] *****************
+2025-08-04 21:58:58,450 p=34843 u=pi n=ansible | changed: [raspberry-pi] => (item=/etc/netplan/01-router-config.yaml)
+2025-08-04 21:58:58,476 p=34843 u=pi n=ansible | TASK [host-preparation : Configure network interfaces] *************************
+2025-08-04 21:59:00,439 p=34843 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:59:00,467 p=34843 u=pi n=ansible | TASK [host-preparation : Enable IP forwarding] *********************************
+2025-08-04 21:59:01,607 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:01,632 p=34843 u=pi n=ansible | TASK [host-preparation : Create bridge setup script] ***************************
+2025-08-04 21:59:02,774 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:02,800 p=34843 u=pi n=ansible | TASK [host-preparation : Install bridge utilities] *****************************
+2025-08-04 21:59:05,707 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:05,733 p=34843 u=pi n=ansible | TASK [host-preparation : Check if interfaces exist] ****************************
+2025-08-04 21:59:06,331 p=34843 u=pi n=ansible | ok: [raspberry-pi] => (item=eth1)
+2025-08-04 21:59:06,879 p=34843 u=pi n=ansible | ok: [raspberry-pi] => (item=eth0)
+2025-08-04 21:59:06,906 p=34843 u=pi n=ansible | TASK [host-preparation : Display interface status] *****************************
+2025-08-04 21:59:06,968 p=34843 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth1', 'start': '2025-08-04 21:59:06.236475', 'end': '2025-08-04 21:59:06.246604', 'delta': '0:00:00.010129', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth1', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000', '    link/ether 1c:bf:ce:c6:d6:62 brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth1', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth1 status:\nEXISTS - 3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 21:59:06,980 p=34843 u=pi n=ansible | ok: [raspberry-pi] => (item={'changed': False, 'stdout': '2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff', 'stderr': '', 'rc': 0, 'cmd': 'ip link show eth0', 'start': '2025-08-04 21:59:06.792230', 'end': '2025-08-04 21:59:06.802458', 'delta': '0:00:00.010228', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'ip link show eth0', '_uses_shell': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000', '    link/ether e4:5f:01:25:0c:4d brd ff:ff:ff:ff:ff:ff'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': 'eth0', 'ansible_loop_var': 'item'}) => {
+    "msg": "Interface eth0 status:\nEXISTS - 2: eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq master br0 state DOWN mode DEFAULT group default qlen 1000\n"
+}
+2025-08-04 21:59:07,007 p=34843 u=pi n=ansible | TASK [host-preparation : Setup network bridges (only if interfaces exist)] *****
+2025-08-04 21:59:07,805 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:07,831 p=34843 u=pi n=ansible | TASK [host-preparation : Configure iptables for routing] ***********************
+2025-08-04 21:59:08,854 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:08,880 p=34843 u=pi n=ansible | TASK [host-preparation : Allow forwarding between interfaces] ******************
+2025-08-04 21:59:09,565 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:09,591 p=34843 u=pi n=ansible | TASK [host-preparation : Allow established connections back] *******************
+2025-08-04 21:59:10,486 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:10,532 p=34843 u=pi n=ansible | TASK [kvm-setup : Debug variables] *********************************************
+2025-08-04 21:59:10,625 p=34843 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "opnsense_image_url: https://github.com/maurice-w/opnsense-vm-images/releases/download/25.1/OPNsense-25.1-ufs-efi-vm-aarch64.qcow2.bz2\nubuntu_iso_url: https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-24.04.2-live-server-arm64.iso\nopnsense_vm_name: opnsense-router\ndocker_vm_name: docker-host\n"
+}
+2025-08-04 21:59:10,650 p=34843 u=pi n=ansible | TASK [kvm-setup : Check system architecture] ***********************************
+2025-08-04 21:59:10,690 p=34843 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "System architecture: aarch64 - Using native ARM64 images"
+}
+2025-08-04 21:59:10,717 p=34843 u=pi n=ansible | TASK [kvm-setup : Create VM storage directory] *********************************
+2025-08-04 21:59:11,322 p=34843 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 21:59:11,347 p=34843 u=pi n=ansible | TASK [kvm-setup : Install UEFI firmware for ARM64 VMs] *************************
+2025-08-04 21:59:14,159 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:14,184 p=34843 u=pi n=ansible | TASK [kvm-setup : Download OPNsense ARM64 VM image] ****************************
+2025-08-04 21:59:16,004 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:16,031 p=34843 u=pi n=ansible | TASK [kvm-setup : Extract OPNsense VM image] ***********************************
+2025-08-04 21:59:16,064 p=34843 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:59:16,090 p=34843 u=pi n=ansible | TASK [kvm-setup : Check if VM disk exists] *************************************
+2025-08-04 21:59:31,005 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:31,031 p=34843 u=pi n=ansible | TASK [kvm-setup : Copy OPNsense image to VM disk] ******************************
+2025-08-04 21:59:31,065 p=34843 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 21:59:31,091 p=34843 u=pi n=ansible | TASK [kvm-setup : Resize OPNsense VM disk to 20GB] *****************************
+2025-08-04 21:59:31,715 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:31,742 p=34843 u=pi n=ansible | TASK [kvm-setup : Download Ubuntu Server ARM64 ISO] ****************************
+2025-08-04 21:59:32,803 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:32,828 p=34843 u=pi n=ansible | TASK [kvm-setup : Create Docker VM disk] ***************************************
+2025-08-04 21:59:33,448 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:33,473 p=34843 u=pi n=ansible | TASK [kvm-setup : Set proper ownership for VM files] ***************************
+2025-08-04 21:59:34,099 p=34843 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/opnsense-router.qcow2)
+2025-08-04 21:59:34,670 p=34843 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/docker-host.qcow2)
+2025-08-04 21:59:35,276 p=34843 u=pi n=ansible | changed: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage/ubuntu-server-arm64.iso)
+2025-08-04 21:59:35,304 p=34843 u=pi n=ansible | TASK [kvm-setup : Create OPNsense VM definition (ARM64 native)] ****************
+2025-08-04 21:59:36,471 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:36,495 p=34843 u=pi n=ansible | TASK [kvm-setup : Create Docker VM definition (ARM64 native)] ******************
+2025-08-04 21:59:37,692 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:37,718 p=34843 u=pi n=ansible | TASK [kvm-setup : Define OPNsense VM] ******************************************
+2025-08-04 21:59:39,046 p=34843 u=pi n=ansible | [WARNING]: 'xml' is given - ignoring 'name'
+
+2025-08-04 21:59:39,046 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:39,075 p=34843 u=pi n=ansible | TASK [kvm-setup : Define Docker VM] ********************************************
+2025-08-04 21:59:39,760 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 21:59:39,785 p=34843 u=pi n=ansible | TASK [kvm-setup : Display VM information] **************************************
+2025-08-04 21:59:39,828 p=34843 u=pi n=ansible | ok: [raspberry-pi] => {
+    "msg": "ARM64 native VMs have been defined:\n- opnsense-router: Ready-to-use OPNsense image\n- docker-host: Ubuntu 24.04 LTS for Docker\n\nTo start VMs:\nsudo virsh start opnsense-router\nsudo virsh start docker-host\n\nTo access VM consoles:\nsudo virsh console opnsense-router\nsudo virsh console docker-host\n\nOPNsense will be accessible at: https://10.0.10.1\n"
+}
+2025-08-04 21:59:39,879 p=34843 u=pi n=ansible | TASK [opnsense-config : Wait for OPNsense VM to be defined] ********************
+2025-08-04 22:00:10,989 p=34843 u=pi n=ansible | ok: [raspberry-pi -> localhost]
+2025-08-04 22:00:11,014 p=34843 u=pi n=ansible | TASK [opnsense-config : Fix /media/pi directory permissions for libvirt access] ***
+2025-08-04 22:00:11,613 p=34843 u=pi n=ansible | ok: [raspberry-pi]
+2025-08-04 22:00:11,639 p=34843 u=pi n=ansible | TASK [opnsense-config : Ensure all parent directories are accessible] **********
+2025-08-04 22:00:12,267 p=34843 u=pi n=ansible | ok: [raspberry-pi] => (item=/media)
+2025-08-04 22:00:12,847 p=34843 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi)
+2025-08-04 22:00:13,422 p=34843 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB)
+2025-08-04 22:00:13,987 p=34843 u=pi n=ansible | ok: [raspberry-pi] => (item=/media/pi/ext_drive_1TB/vm-storage)
+2025-08-04 22:00:14,014 p=34843 u=pi n=ansible | TASK [opnsense-config : Ensure VM storage directory exists with proper permissions] ***
+2025-08-04 22:00:14,627 p=34843 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 22:00:14,651 p=34843 u=pi n=ansible | TASK [opnsense-config : Ensure libvirt-qemu has access to the VM disk image] ***
+2025-08-04 22:00:15,259 p=34843 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 22:00:15,284 p=34843 u=pi n=ansible | TASK [opnsense-config : Test libvirt-qemu access to VM disk] *******************
+2025-08-04 22:00:15,896 p=34843 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 22:00:15,922 p=34843 u=pi n=ansible | TASK [opnsense-config : Verify bridge interface exists] ************************
+2025-08-04 22:00:16,547 p=34843 u=pi n=ansible | changed: [raspberry-pi]
+2025-08-04 22:00:16,572 p=34843 u=pi n=ansible | TASK [opnsense-config : Create bridge if not exists] ***************************
+2025-08-04 22:00:16,607 p=34843 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 22:00:16,634 p=34843 u=pi n=ansible | TASK [opnsense-config : Ensure bridge is up] ***********************************
+2025-08-04 22:00:16,669 p=34843 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 22:00:16,695 p=34843 u=pi n=ansible | TASK [opnsense-config : Add interface to bridge] *******************************
+2025-08-04 22:00:16,729 p=34843 u=pi n=ansible | skipping: [raspberry-pi]
+2025-08-04 22:00:16,755 p=34843 u=pi n=ansible | TASK [opnsense-config : Start OPNsense VM] *************************************
+2025-08-04 22:00:17,609 p=34843 u=pi n=ansible | An exception occurred during task execution. To see the full traceback, use -vvv. The error was: libvirt.libvirtError: Unable to get index for interface eth2: No such device
+2025-08-04 22:00:17,610 p=34843 u=pi n=ansible | fatal: [raspberry-pi]: FAILED! => {"changed": false, "msg": "Unable to get index for interface eth2: No such device"}
+2025-08-04 22:00:17,613 p=34843 u=pi n=ansible | PLAY RECAP *********************************************************************
+2025-08-04 22:00:17,614 p=34843 u=pi n=ansible | raspberry-pi               : ok=40   changed=9    unreachable=0    failed=1    skipped=6    rescued=0    ignored=0   

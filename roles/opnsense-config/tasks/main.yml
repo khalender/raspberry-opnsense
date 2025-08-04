@@ -47,6 +47,23 @@
   become: true
   failed_when: access_test.rc != 0
 
+- name: Verify bridge interface exists
+  command: ip link show {{ bridge_interface }}
+  register: bridge_check
+  ignore_errors: yes
+
+- name: Create bridge if not exists
+  command: ip link add name {{ bridge_interface }} type bridge
+  when: bridge_check.rc != 0
+
+- name: Ensure bridge is up
+  command: ip link set {{ bridge_interface }} up
+  when: bridge_check.rc != 0
+
+- name: Add interface to bridge
+  command: ip link set {{ lan_interface }} master {{ bridge_interface }}
+  when: bridge_check.rc != 0
+
 - name: Start OPNsense VM
   virt:
     name: "{{ opnsense_vm_name }}"
